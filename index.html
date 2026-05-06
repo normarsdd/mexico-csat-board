@@ -1117,12 +1117,92 @@ function renderHistory() {
     p.strokeStyle = '#B71C1C'; p.lineWidth = 1.4*s; p.lineCap = 'round';
     p.beginPath(); p.arc(0, 7*s, 4*s, .15*Math.PI, .85*Math.PI); p.stroke();
 
+    // Arms + tiny hands (swing opposite to legs)
+    const armSwing = Math.sin(t * .045) * 5 * s;
+    p.fillStyle = '#FFD600';
+    // Left arm
+    p.beginPath(); p.ellipse(-16*s, 18*s - armSwing, 4*s, 3*s, -.4, 0, Math.PI*2); p.fill();
+    // Left hand (3 tiny finger bumps)
+    p.beginPath(); p.arc(-20*s, 17*s - armSwing, 3.5*s, 0, Math.PI*2); p.fill();
+    p.beginPath(); p.arc(-22.5*s, 15*s - armSwing, 2.2*s, 0, Math.PI*2); p.fill();
+    p.beginPath(); p.arc(-19.5*s, 13.5*s - armSwing, 2*s, 0, Math.PI*2); p.fill();
+    p.beginPath(); p.arc(-17*s, 13*s - armSwing, 2*s, 0, Math.PI*2); p.fill();
+    // Right arm
+    p.beginPath(); p.ellipse(16*s, 18*s + armSwing, 4*s, 3*s, .4, 0, Math.PI*2); p.fill();
+    // Right hand
+    p.beginPath(); p.arc(20*s, 17*s + armSwing, 3.5*s, 0, Math.PI*2); p.fill();
+    p.beginPath(); p.arc(22.5*s, 15*s + armSwing, 2.2*s, 0, Math.PI*2); p.fill();
+    p.beginPath(); p.arc(19.5*s, 13.5*s + armSwing, 2*s, 0, Math.PI*2); p.fill();
+    p.beginPath(); p.arc(17*s, 13*s + armSwing, 2*s, 0, Math.PI*2); p.fill();
+
     // Legs
     const legSwing = Math.sin(t * .045) * 4 * s;
     p.fillStyle = '#FFD600';
     p.beginPath(); p.ellipse(-5*s + legSwing, 33*s, 4*s, 6*s, 0, 0, Math.PI*2); p.fill();
     p.beginPath(); p.ellipse(5*s - legSwing, 33*s, 4*s, 6*s, 0, 0, Math.PI*2); p.fill();
 
+    p.restore();
+  }
+
+  // ── Togepi ────────────────────────────────────────────────
+  // Tumbles along the grass at the very bottom of the screen
+  const togi = { x: 0, y: 0, angle: 0, vx: 0, dir: 1, speed: .9, scale: 1.05 };
+  function resetTogi() {
+    togi.dir = Math.random() > .5 ? 1 : -1;
+    togi.x    = togi.dir === 1 ? -60 : pkCv.width + 60;
+    togi.y    = pkCv.height - 28;
+    togi.angle = 0;
+  }
+  function drawTogepi(x, y, sc, angle) {
+    const s = sc; const p = pkCx;
+    p.save(); p.translate(x, y); p.rotate(angle);
+    // Shadow (stays horizontal regardless of rotation — draw before rotate bakes in)
+    // Egg body (cream/white)
+    p.fillStyle = '#FFFDE7';
+    p.beginPath(); p.ellipse(0, 0, 10*s, 13*s, 0, 0, Math.PI*2); p.fill();
+    p.strokeStyle = '#CCC'; p.lineWidth = .8*s;
+    p.beginPath(); p.ellipse(0, 0, 10*s, 13*s, 0, 0, Math.PI*2); p.stroke();
+    // Egg shell bottom (grey/white base)
+    p.fillStyle = '#E0E0E0';
+    p.beginPath(); p.ellipse(0, 7*s, 10*s, 7*s, 0, 0, Math.PI*2); p.fill();
+    // Shell pattern — red and blue triangles on egg top
+    p.fillStyle = '#E53935';
+    p.beginPath(); p.moveTo(-5*s, -2*s); p.lineTo(-2*s, -10*s); p.lineTo(0, -2*s); p.closePath(); p.fill();
+    p.fillStyle = '#1E88E5';
+    p.beginPath(); p.moveTo(2*s, -4*s); p.lineTo(5*s, -11*s); p.lineTo(7*s, -3*s); p.closePath(); p.fill();
+    p.fillStyle = '#E53935';
+    p.beginPath(); p.moveTo(-8*s, 1*s); p.lineTo(-6*s, -7*s); p.lineTo(-3*s, 1*s); p.closePath(); p.fill();
+    p.fillStyle = '#1E88E5';
+    p.beginPath(); p.moveTo(4*s, 2*s); p.lineTo(7*s, -5*s); p.lineTo(9*s, 2*s); p.closePath(); p.fill();
+    // Face (peek out from top of shell)
+    // Head (round, peach)
+    p.fillStyle = '#FFCCBC';
+    p.beginPath(); p.arc(0, -7*s, 7*s, 0, Math.PI*2); p.fill();
+    // Eyes (black dots)
+    p.fillStyle = '#111';
+    p.beginPath(); p.arc(-2.5*s, -8*s, 1.5*s, 0, Math.PI*2); p.fill();
+    p.beginPath(); p.arc(2.5*s, -8*s, 1.5*s, 0, Math.PI*2); p.fill();
+    // Eye shine
+    p.fillStyle = '#fff';
+    p.beginPath(); p.arc(-1.9*s, -8.7*s, .6*s, 0, Math.PI*2); p.fill();
+    p.beginPath(); p.arc(3.1*s, -8.7*s, .6*s, 0, Math.PI*2); p.fill();
+    // Rosy cheeks
+    p.fillStyle = '#FF8A80'; p.globalAlpha = .6;
+    p.beginPath(); p.ellipse(-4*s, -6.5*s, 2.5*s, 1.8*s, 0, 0, Math.PI*2); p.fill();
+    p.beginPath(); p.ellipse(4*s, -6.5*s, 2.5*s, 1.8*s, 0, 0, Math.PI*2); p.fill();
+    p.globalAlpha = 1;
+    // Tiny smile
+    p.strokeStyle = '#8B4513'; p.lineWidth = .9*s; p.lineCap = 'round';
+    p.beginPath(); p.arc(0, -6*s, 2*s, .1*Math.PI, .9*Math.PI); p.stroke();
+    // Spikes on top of head (3 little points)
+    p.fillStyle = '#FFCCBC';
+    p.beginPath(); p.moveTo(-4*s, -14*s); p.lineTo(-6*s, -19*s); p.lineTo(-1*s, -15*s); p.closePath(); p.fill();
+    p.beginPath(); p.moveTo(0, -14.5*s); p.lineTo(0, -20*s); p.lineTo(3*s, -14.5*s); p.closePath(); p.fill();
+    p.beginPath(); p.moveTo(3*s, -13*s); p.lineTo(6*s, -18*s); p.lineTo(7*s, -13*s); p.closePath(); p.fill();
+    // Tiny arms sticking out sides
+    p.fillStyle = '#FFCCBC';
+    p.beginPath(); p.ellipse(-12*s, -2*s, 4*s, 2.5*s, -.4, 0, Math.PI*2); p.fill();
+    p.beginPath(); p.ellipse(12*s, -2*s, 4*s, 2.5*s, .4, 0, Math.PI*2); p.fill();
     p.restore();
   }
 
@@ -1263,6 +1343,7 @@ function renderHistory() {
 
   function init() {
     resetPika();
+    resetTogi();
     resetJiggly();
     initPidgeys();
   }
@@ -1270,12 +1351,20 @@ function renderHistory() {
   function draw(t) {
     cx.clearRect(0, 0, cv.width, cv.height);
 
-    // ── Pikachu walk (own canvas, in front of mountains) ──
+    // ── Ground Pokemon (own canvas, in front of mountains) ──
     pkCx.clearRect(0, 0, pkCv.width, pkCv.height);
+
     pika.x += pika.speed;
     const bounce = Math.abs(Math.sin(t * .045)) * 5;
     drawPikachu(pika.x, pika.y - bounce, pika.scale, t);
     if (pika.x > pkCv.width + 80) resetPika();
+
+    // Togepi tumbles at grass level
+    togi.x += togi.speed * togi.dir;
+    togi.angle += .045 * togi.dir;
+    drawTogepi(togi.x, togi.y, togi.scale, togi.angle);
+    if (togi.dir === 1 && togi.x > pkCv.width + 60) resetTogi();
+    if (togi.dir === -1 && togi.x < -60) resetTogi();
 
     // ── Jigglypuff float + cursor flee ──
     const jRadius = 22 * jiggly.scale;
