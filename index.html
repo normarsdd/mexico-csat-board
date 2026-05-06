@@ -20,7 +20,7 @@
       --pk-border-out: #08082A;
       --pk-border-in:  #2A2A6A;
       --pk-text:       #E8E8FF;
-      --pk-muted:      #5858A8;
+      --pk-muted:      #E8E8F0;
       --pk-hp-green:   #50C850;
       --pk-hp-yellow:  #F8D030;
       --pk-hp-red:     #F05050;
@@ -1128,11 +1128,19 @@ function renderHistory() {
   }
 
   // ── Jigglypuff ────────────────────────────────────────────
-  // Floats in mid-sky, bobs up and down
-  const jiggly = { x: 0, baseY: 0, phase: Math.random() * Math.PI * 2, scale: .95 };
+  // Floats in mid-sky, bobs, and flees cursor
+  const jiggly = {
+    x: 0, y: 0, vx: 0, vy: 0,
+    phase: Math.random() * Math.PI * 2, scale: .95,
+    scared: false,
+  };
+  let mouseX = -999, mouseY = -999;
+  addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+
   function resetJiggly() {
     jiggly.x = cv.width * .6 + Math.random() * cv.width * .15;
-    jiggly.baseY = cv.height * .28 + Math.random() * cv.height * .08;
+    jiggly.y  = cv.height * .28 + Math.random() * cv.height * .08;
+    jiggly.vx = 0; jiggly.vy = 0;
   }
 
   function drawJigglypuff(x, y, sc) {
@@ -1266,9 +1274,33 @@ function renderHistory() {
     drawPikachu(pika.x, pika.y - bounce, pika.scale, t);
     if (pika.x > cv.width + 80) resetPika();
 
-    // ── Jigglypuff float ──
-    const floatY = jiggly.baseY + Math.sin(t * .018 + jiggly.phase) * 12;
-    drawJigglypuff(jiggly.x, floatY, jiggly.scale);
+    // ── Jigglypuff float + cursor flee ──
+    const jRadius = 22 * jiggly.scale;
+    const dx = jiggly.x - mouseX, dy = jiggly.y - mouseY;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    const fleeZone = 110;
+    if (dist < fleeZone) {
+      // Flee: push away from cursor with force proportional to closeness
+      const force = (fleeZone - dist) / fleeZone * 5.5;
+      jiggly.vx += (dx / dist) * force;
+      jiggly.vy += (dy / dist) * force;
+      jiggly.scared = true;
+    } else {
+      jiggly.scared = false;
+    }
+    // Drift back to center-ish area gently
+    const targetX = cv.width * .65, targetY = cv.height * .3;
+    jiggly.vx += (targetX - jiggly.x) * .004;
+    jiggly.vy += (targetY - jiggly.y) * .004;
+    // Friction
+    jiggly.vx *= .88; jiggly.vy *= .88;
+    // Natural bob when calm
+    if (!jiggly.scared) jiggly.vy += Math.sin(t * .045 + jiggly.phase) * .18;
+    jiggly.x += jiggly.vx; jiggly.y += jiggly.vy;
+    // Keep within sky bounds
+    jiggly.x = Math.max(30, Math.min(cv.width - 30, jiggly.x));
+    jiggly.y = Math.max(30, Math.min(cv.height * .72, jiggly.y));
+    drawJigglypuff(jiggly.x, jiggly.y, jiggly.scale);
 
     // ── Pidgey flock ──
     pidgeys.forEach(p => {
