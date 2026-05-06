@@ -75,13 +75,15 @@
 
     /* Grass blades */
     .grass-layer {
-      position: fixed; bottom: 0; left: 0; right: 0;
-      height: 36px; pointer-events: none; z-index: 2;
-      display: flex; align-items: flex-end; overflow: hidden;
+      position: fixed; bottom: 0; left: 0;
+      width: 100vw; height: 40px;
+      pointer-events: none; z-index: 2;
+      display: flex; align-items: flex-end;
+      overflow: hidden;
     }
     .grass-blade {
-      flex-shrink: 0;
-      width: 6px;
+      flex: 1 0 0;
+      min-width: 4px; max-width: 10px;
       background: #0A3A0A;
       transform-origin: bottom center;
       animation: sway linear infinite;
@@ -993,7 +995,7 @@ function renderHistory() {
 /* ─── Grass blades ───────────────────────────────────────────── */
 (function() {
   const layer = document.getElementById('grass-layer');
-  const count = Math.ceil(window.innerWidth / 7) + 4;
+  const count = Math.ceil(window.innerWidth / 6) + 20;
   for (let i = 0; i < count; i++) {
     const b = document.createElement('div');
     b.className = 'grass-blade';
