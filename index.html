@@ -309,7 +309,27 @@
       text-shadow: 0 0 10px rgba(60,150,255,.5);
     }
 
-    .trainer-icon { font-size: 2.8rem; margin-bottom: 10px; }
+    /* Trainer sprite — FA icon in a glowing circle */
+    .trainer-sprite {
+      width: 76px; height: 76px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 14px;
+      font-size: 1.9rem;
+      border: 3px solid;
+      position: relative;
+    }
+    .trainer-sprite.fire-sprite {
+      background: radial-gradient(circle, rgba(255,107,53,.2) 0%, rgba(255,107,53,.05) 100%);
+      border-color: var(--fire-color);
+      color: var(--fire-color);
+      box-shadow: 0 0 22px rgba(255,107,53,.5), inset 0 0 12px rgba(255,107,53,.1);
+    }
+    .trainer-sprite.water-sprite {
+      background: radial-gradient(circle, rgba(91,184,245,.18) 0%, rgba(91,184,245,.04) 100%);
+      border-color: var(--water-color);
+      color: var(--water-color);
+      box-shadow: 0 0 22px rgba(91,184,245,.45), inset 0 0 12px rgba(91,184,245,.1);
+    }
     .trainer-name {
       font-family: 'Press Start 2P', monospace;
       font-size: 0.58rem; margin-bottom: 4px; line-height: 1.6;
@@ -665,7 +685,7 @@
     </div>
     <div class="pokeball-wrap"><div class="pokeball"></div></div>
     <h1>CSAT LEAGUE</h1>
-    <p class="tagline">★ Gotta catch 'em all! ★</p>
+    <p class="tagline"><i class="fas fa-star"></i> Gotta catch 'em all! <i class="fas fa-star"></i></p>
     <p class="subtitle">Q2 2026 · Mexico TSE Team · Idea by <strong>Fer Ramirez</strong> 🇲🇽</p>
     <div class="status-pill">
       <span class="dot"></span>
@@ -695,7 +715,9 @@
 
       <div class="trainer-card fire" id="norma-card">
         <div class="type-badge fire"><i class="fas fa-fire"></i>&nbsp;FIRE GYM</div>
-        <div class="trainer-icon">🏋️‍♀️</div>
+        <div class="trainer-sprite fire-sprite">
+          <i class="fas fa-fire-flame-curved"></i>
+        </div>
         <div class="trainer-name" style="color:var(--fire-color)">LEADER NORMA</div>
         <div class="trainer-sub">Norma Ruy Sanchez</div>
         <div class="team-score-big" style="color:var(--fire-color)" id="norma-pts">—</div>
@@ -717,7 +739,9 @@
 
       <div class="trainer-card water" id="pablo-card">
         <div class="type-badge water"><i class="fas fa-droplet"></i>&nbsp;WATER GYM</div>
-        <div class="trainer-icon">🧑‍💼</div>
+        <div class="trainer-sprite water-sprite">
+          <i class="fas fa-droplet"></i>
+        </div>
         <div class="trainer-name" style="color:var(--water-color)">LEADER PABLO</div>
         <div class="trainer-sub">Pablo Acosta</div>
         <div class="team-score-big" style="color:var(--water-color)" id="pablo-pts">—</div>
