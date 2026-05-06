@@ -3,38 +3,46 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mexico CSAT Board</title>
+  <title>Mexico CSAT League</title>
   <script src="data.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
   <style>
     /* ── Palette ─────────────────────────────────────────────── */
     :root {
-      --dd-purple:        #632CA6;
-      --dd-purple-light:  #9B59D0;
-      --dd-purple-dark:   #3A1066;
-      --dd-bg:            #0B0618;
-      --dd-surface:       #140A2E;
-      --dd-card:          #1E0F3F;
-      --dd-border:        #2D1B5E;
-      --dd-gold:          #FFD700;
-      --dd-gold-light:    #FFF0A0;
-      --dd-silver:        #C0C0C0;
-      --dd-bronze:        #CD7F32;
-      --dd-text:          #F0E8FF;
-      --dd-muted:         #8B7AA8;
-      --dd-green:         #52C87A;
-      --dd-red:           #E05252;
-      --norma-color:      #9B59D0;
-      --pablo-color:      #E07832;
+      --pk-red:        #CC0000;
+      --pk-red-dark:   #8B0000;
+      --pk-yellow:     #FFCB05;
+      --pk-blue:       #3B4CCA;
+      --pk-bg:         #0A0A1F;
+      --pk-surface:    #11112A;
+      --pk-card:       #181830;
+      --pk-border:     #2A2A55;
+      --pk-text:       #E8E8FF;
+      --pk-muted:      #6868A8;
+      --pk-green:      #4CAF50;
+      --pk-hp-green:   #52CC52;
+      --pk-hp-yellow:  #F8D030;
+      --pk-hp-red:     #F85888;
+      --pk-gold:       #FFD700;
+      --pk-shiny:      #F0A000;
+      --fire-color:    #FF6B35;
+      --water-color:   #4FC3F7;
+      --fire-dark:     #CC4400;
+      --water-dark:    #0288D1;
     }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: 'Segoe UI', system-ui, sans-serif;
-      background: var(--dd-bg);
-      color: var(--dd-text);
+      background: var(--pk-bg);
+      color: var(--pk-text);
       min-height: 100vh;
       overflow-x: hidden;
     }
+
+    .pixel { font-family: 'Press Start 2P', monospace; }
 
     /* ── Starfield ───────────────────────────────────────────── */
     #starfield { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
@@ -46,243 +54,413 @@
       padding: 0 24px 80px;
     }
 
+    /* ── Pokeball CSS art ────────────────────────────────────── */
+    .pokeball-wrap {
+      display: flex; justify-content: center;
+      margin-bottom: 12px;
+      animation: bounce 1.8s ease-in-out infinite;
+    }
+    @keyframes bounce {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-10px); }
+    }
+    .pokeball {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: linear-gradient(to bottom, var(--pk-red) 50%, white 50%);
+      border: 4px solid #111; position: relative;
+      box-shadow: 0 0 30px rgba(204,0,0,.5), 0 0 60px rgba(204,0,0,.2);
+    }
+    .pokeball::before {
+      content: '';
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 18px; height: 18px;
+      background: white; border-radius: 50%;
+      border: 4px solid #111;
+      z-index: 2;
+    }
+    .pokeball::after {
+      content: '';
+      position: absolute; top: calc(50% - 3px); left: -4px; right: -4px;
+      height: 6px; background: #111;
+      z-index: 1;
+    }
+
     /* ── Header ──────────────────────────────────────────────── */
-    header { text-align: center; padding: 44px 0 28px; }
+    header { text-align: center; padding: 44px 0 24px; }
 
-    .logo-row {
+    .wordmark-row {
       display: flex; align-items: center; justify-content: center;
-      gap: 10px; margin-bottom: 18px;
+      gap: 10px; margin-bottom: 20px;
     }
-    .logo-row svg { width: 38px; height: 38px; }
+    .wordmark-row svg { width: 32px; height: 32px; opacity: .7; }
     .wordmark {
-      font-size: 1.2rem; font-weight: 700; letter-spacing: 2.5px;
-      text-transform: uppercase; color: var(--dd-purple-light);
-    }
-
-    .trophy { font-size: 4rem; display: block; margin-bottom: 6px;
-      animation: glow 2.8s ease-in-out infinite;
-      filter: drop-shadow(0 0 18px #00C853);
-    }
-    @keyframes glow {
-      0%,100% { filter: drop-shadow(0 0 14px #00C853); transform: scale(1); }
-      50%      { filter: drop-shadow(0 0 34px #69F0AE); transform: scale(1.05); }
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.65rem; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--pk-muted);
     }
 
     h1 {
-      font-size: clamp(1.9rem, 5vw, 3.2rem); font-weight: 800;
-      letter-spacing: -0.5px; line-height: 1.1;
-      background: linear-gradient(135deg, #00C853 0%, var(--dd-purple-light) 55%, #FFD700 100%);
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(1rem, 3.5vw, 1.8rem);
+      line-height: 1.4;
+      background: linear-gradient(135deg, var(--pk-yellow) 0%, #FF6B35 50%, var(--pk-yellow) 100%);
       background-size: 200% auto;
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       background-clip: text;
-      animation: shimmer 4s linear infinite;
+      animation: shimmer 3s linear infinite;
+      margin-bottom: 6px;
     }
     @keyframes shimmer { to { background-position: 200% center; } }
 
-    .subtitle { color: var(--dd-muted); font-size: 1rem; margin-top: 10px; }
-    .subtitle strong { color: var(--dd-purple-light); }
+    .tagline {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.52rem; color: var(--pk-yellow);
+      letter-spacing: 3px; text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .subtitle { color: var(--pk-muted); font-size: 0.88rem; margin-top: 6px; }
+    .subtitle strong { color: var(--pk-yellow); }
 
     .status-pill {
       display: inline-flex; align-items: center; gap: 8px;
-      margin-top: 18px; background: var(--dd-card);
-      border: 1px solid var(--dd-border); border-radius: 999px;
-      padding: 5px 16px; font-size: 0.8rem; color: var(--dd-muted);
+      margin-top: 16px; background: var(--pk-card);
+      border: 1px solid var(--pk-border); border-radius: 999px;
+      padding: 5px 16px; font-size: 0.78rem; color: var(--pk-muted);
     }
     .dot { width: 7px; height: 7px; border-radius: 50%;
-      background: var(--dd-green); box-shadow: 0 0 8px var(--dd-green);
+      background: var(--pk-hp-green); box-shadow: 0 0 8px var(--pk-hp-green);
       animation: blink 1.5s ease-in-out infinite;
     }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
 
     /* ── Section header ──────────────────────────────────────── */
     .section-hd {
-      font-size: 0.72rem; text-transform: uppercase; letter-spacing: 3px;
-      color: var(--dd-muted); margin: 44px 0 18px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.58rem; text-transform: uppercase; letter-spacing: 2px;
+      color: var(--pk-yellow); margin: 44px 0 18px;
       display: flex; align-items: center; gap: 12px;
     }
-    .section-hd::after { content:''; flex:1; height:1px; background:var(--dd-border); }
+    .section-hd::after { content:''; flex:1; height:2px; background: linear-gradient(to right, var(--pk-border), transparent); }
 
-    /* ── Team Battle ─────────────────────────────────────────── */
-    .team-battle {
+    /* ── Scoring legend ──────────────────────────────────────── */
+    .legend {
+      display: flex; gap: 10px; justify-content: center;
+      flex-wrap: wrap; margin-top: 18px;
+    }
+    .legend-chip {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--pk-card); border: 2px solid var(--pk-border);
+      border-radius: 10px; padding: 10px 16px; font-size: 0.8rem;
+    }
+    .legend-chip i { font-size: 1.1rem; }
+    .legend-chip .pts {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.65rem; color: var(--pk-yellow);
+    }
+    .shiny-label { color: var(--pk-shiny); }
+    .regular-label { color: var(--pk-hp-green); }
+
+    /* ── Battle screen ───────────────────────────────────────── */
+    .battle-arena {
+      background: var(--pk-surface);
+      border: 2px solid var(--pk-border);
+      border-radius: 20px;
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+    .battle-arena::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at center, rgba(255,203,5,.04) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .battle-grid {
       display: grid;
       grid-template-columns: 1fr auto 1fr;
-      gap: 16px;
+      gap: 20px;
       align-items: center;
     }
-    @media(max-width:640px) { .team-battle { grid-template-columns: 1fr; } }
+    @media(max-width:640px) { .battle-grid { grid-template-columns: 1fr; } }
 
-    .team-card {
-      background: var(--dd-card); border-radius: 18px;
-      padding: 28px 24px; text-align: center;
+    /* Trainer card */
+    .trainer-card {
+      border-radius: 16px; padding: 24px 20px;
+      text-align: center; position: relative; overflow: hidden;
       border: 2px solid;
-      position: relative; overflow: hidden;
       transition: transform .2s;
     }
-    .team-card:hover { transform: translateY(-4px); }
-    .team-card.norma { border-color: var(--norma-color); box-shadow: 0 0 40px rgba(155,89,208,.15); }
-    .team-card.pablo { border-color: var(--pablo-color); box-shadow: 0 0 40px rgba(224,120,50,.15); }
-
-    .team-glow {
-      position: absolute; top: -60px; left: 50%; transform: translateX(-50%);
-      width: 200px; height: 200px; border-radius: 50%;
-      opacity: .10; filter: blur(50px); pointer-events: none;
+    .trainer-card:hover { transform: translateY(-4px); }
+    .trainer-card.fire {
+      background: linear-gradient(145deg, #1A0A00, #2A1200);
+      border-color: var(--fire-color);
+      box-shadow: 0 0 40px rgba(255,107,53,.2);
+    }
+    .trainer-card.water {
+      background: linear-gradient(145deg, #001020, #001830);
+      border-color: var(--water-color);
+      box-shadow: 0 0 40px rgba(79,195,247,.15);
     }
 
-    .team-emoji { font-size: 2.5rem; display: block; margin-bottom: 8px; }
-    .team-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
-    .team-manager { font-size: 0.78rem; color: var(--dd-muted); margin-bottom: 14px; }
-    .team-pts {
-      font-size: 3rem; font-weight: 800; line-height: 1;
-      font-variant-numeric: tabular-nums;
+    .trainer-card .type-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px; border-radius: 999px;
+      font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1px; margin-bottom: 14px;
     }
-    .team-pts-label { font-size: 0.72rem; color: var(--dd-muted); letter-spacing: 1px; text-transform: uppercase; margin-top: 4px; }
-    .team-members-count { font-size: 0.78rem; color: var(--dd-muted); margin-top: 10px; }
+    .type-badge.fire { background: rgba(255,107,53,.2); color: var(--fire-color); border: 1px solid var(--fire-color); }
+    .type-badge.water { background: rgba(79,195,247,.15); color: var(--water-color); border: 1px solid var(--water-color); }
 
-    .team-prog-wrap { margin-top: 16px; }
-    .team-prog-track {
-      height: 8px; background: rgba(255,255,255,.07);
+    .trainer-icon {
+      font-size: 2.8rem; margin-bottom: 10px;
+    }
+    .trainer-name {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.62rem; margin-bottom: 4px; line-height: 1.6;
+    }
+    .trainer-sub { font-size: 0.75rem; color: var(--pk-muted); margin-bottom: 14px; }
+
+    /* HP bar */
+    .hp-row {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 6px;
+    }
+    .hp-label {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.48rem; color: var(--pk-muted); flex-shrink: 0;
+    }
+    .hp-track {
+      flex: 1; height: 10px;
+      background: rgba(255,255,255,.08);
       border-radius: 999px; overflow: hidden;
+      border: 1px solid rgba(255,255,255,.1);
     }
-    .team-prog-fill {
+    .hp-fill {
       height: 100%; border-radius: 999px;
       transition: width 1.2s cubic-bezier(.34,1.56,.64,1);
     }
+    .hp-fill.high  { background: linear-gradient(90deg, var(--pk-hp-green), #7EFF7E); }
+    .hp-fill.mid   { background: linear-gradient(90deg, var(--pk-hp-yellow), #FFEC7E); }
+    .hp-fill.low   { background: linear-gradient(90deg, var(--pk-hp-red), #FF9EC4); }
 
+    .team-score-big {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 1.6rem; line-height: 1;
+    }
+    .team-score-label {
+      font-size: 0.68rem; color: var(--pk-muted);
+      text-transform: uppercase; letter-spacing: 1px; margin-top: 6px;
+    }
+
+    /* VS badge */
     .vs-badge {
       display: flex; flex-direction: column;
       align-items: center; justify-content: center; gap: 6px;
     }
     .vs-text {
-      font-size: 1.8rem; font-weight: 900; color: var(--dd-muted);
-      letter-spacing: 2px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 1.4rem; color: var(--pk-yellow);
+      text-shadow: 0 0 20px rgba(255,203,5,.7);
+      animation: pulse 1.5s ease-in-out infinite;
     }
-    .vs-sub { font-size: 0.68rem; color: var(--dd-muted); letter-spacing: 2px; text-transform: uppercase; }
+    @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+    .vs-pokeball-mini {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(to bottom, var(--pk-red) 50%, white 50%);
+      border: 2px solid #333;
+      position: relative;
+    }
+    .vs-pokeball-mini::before {
+      content: ''; position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 9px; height: 9px;
+      background: white; border-radius: 50%;
+      border: 2px solid #333; z-index: 2;
+    }
+    .vs-pokeball-mini::after {
+      content: ''; position: absolute;
+      top: calc(50% - 1.5px); left: -2px; right: -2px;
+      height: 3px; background: #333; z-index: 1;
+    }
 
-    /* ── Scoring legend ──────────────────────────────────────── */
-    .legend {
-      display: flex; gap: 12px; justify-content: center;
-      flex-wrap: wrap; margin-top: 16px;
+    /* ── Catch stats chips ───────────────────────────────────── */
+    .catch-stat {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 0.75rem; margin-top: 10px;
     }
-    .legend-chip {
-      display: flex; align-items: center; gap: 6px;
-      background: var(--dd-card); border: 1px solid var(--dd-border);
-      border-radius: 8px; padding: 8px 14px; font-size: 0.8rem;
-    }
-    .legend-pts { font-weight: 700; font-size: 1rem; color: var(--dd-green); }
+    .catch-stat i { font-size: 0.8rem; }
 
-    /* ── Team section ────────────────────────────────────────── */
-    .team-section {
-      background: var(--dd-card); border-radius: 16px;
-      border: 1px solid var(--dd-border);
-      overflow: hidden; margin-bottom: 16px;
+    /* ── Trainer section (per team) ──────────────────────────── */
+    .trainer-list {
+      background: var(--pk-card);
+      border: 2px solid var(--pk-border);
+      border-radius: 16px;
+      overflow: hidden;
     }
-    .team-section-header {
-      padding: 16px 20px;
-      display: flex; align-items: center; gap: 12px;
-      border-bottom: 1px solid var(--dd-border);
+    .trainer-list-header {
+      padding: 14px 20px;
+      display: flex; align-items: center; gap: 10px;
+      border-bottom: 2px solid var(--pk-border);
     }
-    .team-section-header .team-dot {
-      width: 12px; height: 12px; border-radius: 50%;
+    .trainer-list-header i { font-size: 1rem; }
+    .trainer-list-title {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.55rem; flex: 1; letter-spacing: 1px;
     }
-    .team-section-title { font-weight: 700; font-size: 1rem; flex: 1; }
-    .team-section-score { font-size: 1.1rem; font-weight: 800; }
+    .trainer-list-total {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.7rem;
+    }
 
-    /* ── Player rows ─────────────────────────────────────────── */
-    .player-row {
+    /* ── Player / Trainer row ────────────────────────────────── */
+    .trainer-row {
       padding: 14px 20px;
       display: grid;
-      grid-template-columns: 28px 44px 1fr auto;
+      grid-template-columns: 32px 48px 1fr auto;
       align-items: center; gap: 14px;
       border-bottom: 1px solid rgba(255,255,255,.04);
       transition: background .15s;
     }
-    .player-row:last-child { border-bottom: none; }
-    .player-row:hover { background: rgba(255,255,255,.02); }
+    .trainer-row:last-child { border-bottom: none; }
+    .trainer-row:hover { background: rgba(255,255,255,.025); }
 
-    .rank-num { font-size: 0.95rem; color: var(--dd-muted); font-weight: 700; text-align: center; }
+    .rank-num {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.55rem; color: var(--pk-muted);
+      text-align: center;
+    }
 
-    .avatar {
-      width: 40px; height: 40px; border-radius: 50%;
+    .trainer-avatar {
+      width: 44px; height: 44px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      font-size: 0.82rem; font-weight: 700; flex-shrink: 0;
+      font-size: 0.8rem; font-weight: 700; flex-shrink: 0;
+      border: 2px solid;
     }
 
-    .player-name { font-weight: 600; font-size: 0.92rem; }
-    .player-stats { font-size: 0.73rem; color: var(--dd-muted); margin-top: 3px; }
-    .player-pts-badge {
-      font-size: 1.3rem; font-weight: 800;
-      font-variant-numeric: tabular-nums; text-align: right;
+    .trainer-row-name {
+      font-weight: 700; font-size: 0.9rem; margin-bottom: 3px;
     }
 
-    /* ── Prog bar ────────────────────────────────────────────── */
-    .prog-wrap { margin-top: 5px; }
-    .prog-track { height: 4px; background: rgba(255,255,255,.07); border-radius: 999px; overflow: hidden; }
-    .prog-fill { height: 100%; border-radius: 999px; transition: width .9s cubic-bezier(.34,1.56,.64,1); }
+    /* Mini catch badges */
+    .mini-catches {
+      display: flex; gap: 5px; flex-wrap: wrap; margin-top: 4px; margin-bottom: 5px;
+    }
+    .mini-catch {
+      display: inline-flex; align-items: center; gap: 3px;
+      padding: 2px 7px; border-radius: 6px;
+      font-size: 0.68rem; border: 1px solid;
+    }
+    .mini-catch.shiny {
+      background: rgba(240,160,0,.12);
+      border-color: rgba(240,160,0,.4);
+      color: var(--pk-shiny);
+    }
+    .mini-catch.regular {
+      background: rgba(76,175,80,.1);
+      border-color: rgba(76,175,80,.35);
+      color: var(--pk-hp-green);
+    }
+    .mini-catch i { font-size: 0.65rem; }
 
-    /* ── CSAT breakdown chips ────────────────────────────────── */
-    .csat-chip-row {
-      display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px;
+    /* Pokeball HP bar (player-level) */
+    .player-hp-wrap { margin-top: 4px; }
+
+    .score-pts {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.85rem; text-align: right;
     }
-    .csat-chip {
-      display: inline-flex; align-items: center; gap: 4px;
-      background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08);
-      border-radius: 6px; padding: 2px 7px; font-size: 0.68rem;
+    .score-pts-label {
+      font-size: 0.62rem; color: var(--pk-muted);
+      text-align: right; margin-top: 2px;
     }
-    .csat-chip .n { font-weight: 700; }
-    .with-comment .n { color: var(--dd-green); }
-    .no-comment .n { color: #9B59D0; }
+
+    /* ── Team badge in combined leaderboard ──────────────────── */
+    .team-tag {
+      display: inline-flex; align-items: center; gap: 3px;
+      font-size: 0.6rem; padding: 1px 6px; border-radius: 4px;
+      margin-left: 6px; vertical-align: middle;
+      font-weight: 700;
+    }
+    .team-tag.fire { background: rgba(255,107,53,.15); color: var(--fire-color); border: 1px solid rgba(255,107,53,.3); }
+    .team-tag.water { background: rgba(79,195,247,.12); color: var(--water-color); border: 1px solid rgba(79,195,247,.25); }
+
+    /* ── Pokeball counter decorations ────────────────────────── */
+    .pokeball-row {
+      display: flex; gap: 4px; flex-wrap: wrap; margin-top: 2px;
+    }
+    .pb-icon { font-size: 0.72rem; }
+    .pb-shiny { color: var(--pk-gold); }
+    .pb-reg   { color: var(--pk-hp-green); }
 
     /* ── Info banner ─────────────────────────────────────────── */
     .info-banner {
-      background: rgba(99,44,166,.12); border: 1px solid rgba(99,44,166,.3);
-      border-radius: 10px; padding: 12px 16px; font-size: 0.8rem;
-      color: var(--dd-muted); margin-top: 14px; line-height: 1.6;
+      background: rgba(59,76,202,.1);
+      border: 1px solid rgba(59,76,202,.3);
+      border-radius: 12px; padding: 14px 18px; font-size: 0.8rem;
+      color: var(--pk-muted); margin-top: 16px; line-height: 1.7;
     }
     .info-banner code {
       background: rgba(255,255,255,.07); border-radius: 4px;
-      padding: 1px 6px; font-size: 0.78rem; color: var(--dd-purple-light);
+      padding: 1px 6px; font-size: 0.78rem; color: var(--pk-yellow);
     }
+    .info-banner i { color: var(--pk-yellow); }
 
     /* ── Toast ───────────────────────────────────────────────── */
     #toast {
       position: fixed; bottom: 28px; left: 50%;
       transform: translateX(-50%) translateY(80px);
-      background: var(--dd-card); border: 1px solid var(--dd-purple);
+      background: var(--pk-card); border: 2px solid var(--pk-yellow);
       border-radius: 12px; padding: 12px 22px;
-      font-size: 0.88rem; box-shadow: 0 8px 32px rgba(0,0,0,.4);
+      font-family: 'Press Start 2P', monospace; font-size: 0.6rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,.5);
       z-index: 1000; transition: transform .3s cubic-bezier(.34,1.56,.64,1);
-      pointer-events: none;
+      pointer-events: none; color: var(--pk-yellow);
     }
     #toast.show { transform: translateX(-50%) translateY(0); }
 
-    .medal { font-size: 1.2rem; }
+    /* ── Winner glow on battle card ──────────────────────────── */
+    .trainer-card.winner {
+      transform: scale(1.03);
+    }
+    .trainer-card.winner.fire {
+      box-shadow: 0 0 60px rgba(255,107,53,.4);
+    }
+    .trainer-card.winner.water {
+      box-shadow: 0 0 60px rgba(79,195,247,.35);
+    }
 
     @media(max-width:500px) {
-      .player-row { grid-template-columns: 24px 36px 1fr auto; gap: 10px; }
+      .trainer-row { grid-template-columns: 24px 38px 1fr auto; gap: 10px; }
+      .score-pts { font-size: 0.7rem; }
     }
   </style>
 </head>
 <body>
 
 <canvas id="starfield"></canvas>
-<div id="toast">📊 Board updated!</div>
+<div id="toast"><i class="fas fa-star"></i> Board updated!</div>
 
 <div class="page">
 
   <!-- Header -->
   <header>
-    <div class="logo-row">
+    <div class="wordmark-row">
       <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="50" cy="50" r="48" fill="#632CA6" opacity=".2"/>
         <rect x="26" y="26" width="48" height="48" rx="6" fill="#632CA6"/>
         <circle cx="50" cy="46" r="10" fill="white"/>
-        <circle cx="50" cy="46" r="4"  fill="#632CA6"/>
-        <rect   x="34" y="62" width="32" height="4" rx="2" fill="white"/>
+        <circle cx="50" cy="46" r="4" fill="#632CA6"/>
+        <rect x="34" y="62" width="32" height="4" rx="2" fill="white"/>
       </svg>
       <span class="wordmark">Datadog</span>
     </div>
-    <span class="trophy">⭐</span>
-    <h1>Mexico CSAT Board</h1>
+    <div class="pokeball-wrap"><div class="pokeball"></div></div>
+    <h1>CSAT LEAGUE</h1>
+    <p class="tagline">Gotta catch 'em all!</p>
     <p class="subtitle">Q2 2026 · Mexico TSE Team · Idea by <strong>Fer Ramirez</strong> 🇲🇽</p>
     <div class="status-pill">
       <span class="dot"></span>
@@ -292,64 +470,86 @@
 
   <!-- Scoring legend -->
   <div class="legend">
-    <div class="legend-chip">💬 CSAT with comment <span class="legend-pts">= 2 pts</span></div>
-    <div class="legend-chip">✅ CSAT without comment <span class="legend-pts">= 1 pt</span></div>
-  </div>
-
-  <!-- Team Battle -->
-  <div class="section-hd">🏆 Team Standings</div>
-  <div class="team-battle" id="team-battle">
-    <div class="team-card norma" id="norma-card">
-      <div class="team-glow" style="background:var(--norma-color)"></div>
-      <span class="team-emoji">💜</span>
-      <div class="team-name" style="color:var(--norma-color)">Team Norma</div>
-      <div class="team-manager">Norma Ruy Sanchez</div>
-      <div class="team-pts" style="color:var(--norma-color)" id="norma-pts">—</div>
-      <div class="team-pts-label">points</div>
-      <div class="team-prog-wrap">
-        <div class="team-prog-track">
-          <div class="team-prog-fill" id="norma-bar" style="background:var(--norma-color); width:0%"></div>
-        </div>
-      </div>
+    <div class="legend-chip">
+      <i class="fas fa-star shiny-label"></i>
+      <span>CSAT <span class="shiny-label">with comment</span></span>
+      <span class="pts">= 2 pts</span>
     </div>
-
-    <div class="vs-badge">
-      <div class="vs-text">VS</div>
-      <div class="vs-sub">CSAT Cup</div>
-    </div>
-
-    <div class="team-card pablo" id="pablo-card">
-      <div class="team-glow" style="background:var(--pablo-color)"></div>
-      <span class="team-emoji">🧡</span>
-      <div class="team-name" style="color:var(--pablo-color)">Team Pablo</div>
-      <div class="team-manager">Pablo Acosta</div>
-      <div class="team-pts" style="color:var(--pablo-color)" id="pablo-pts">—</div>
-      <div class="team-pts-label">points</div>
-      <div class="team-prog-wrap">
-        <div class="team-prog-track">
-          <div class="team-prog-fill" id="pablo-bar" style="background:var(--pablo-color); width:0%"></div>
-        </div>
-      </div>
+    <div class="legend-chip">
+      <i class="fas fa-circle-check regular-label"></i>
+      <span>CSAT <span class="regular-label">without comment</span></span>
+      <span class="pts">= 1 pt</span>
     </div>
   </div>
 
-  <!-- Team Norma Players -->
-  <div class="section-hd">💜 Team Norma · Individual Scores</div>
-  <div class="team-section" id="norma-players"></div>
+  <!-- Battle Section -->
+  <div class="section-hd"><i class="fas fa-swords"></i> Gym Battle</div>
+  <div class="battle-arena">
+    <div class="battle-grid">
 
-  <!-- Team Pablo Players -->
-  <div class="section-hd">🧡 Team Pablo · Individual Scores</div>
-  <div class="team-section" id="pablo-players"></div>
+      <!-- Team Norma -->
+      <div class="trainer-card fire" id="norma-card">
+        <div class="type-badge fire"><i class="fas fa-fire"></i> Fire Gym</div>
+        <div class="trainer-icon">🏋️‍♀️</div>
+        <div class="trainer-name" style="color:var(--fire-color)">LEADER NORMA</div>
+        <div class="trainer-sub">Norma Ruy Sanchez</div>
+        <div class="team-score-big" style="color:var(--fire-color)" id="norma-pts">—</div>
+        <div class="team-score-label"><i class="fas fa-bolt"></i> total points</div>
+        <div class="hp-row" style="margin-top:14px">
+          <span class="hp-label">HP</span>
+          <div class="hp-track">
+            <div class="hp-fill high" id="norma-bar" style="width:0%"></div>
+          </div>
+        </div>
+        <div class="catch-stat" id="norma-catches" style="color:var(--fire-color)"></div>
+      </div>
+
+      <!-- VS -->
+      <div class="vs-badge">
+        <div class="vs-pokeball-mini"></div>
+        <div class="vs-text">VS</div>
+        <div class="vs-pokeball-mini"></div>
+      </div>
+
+      <!-- Team Pablo -->
+      <div class="trainer-card water" id="pablo-card">
+        <div class="type-badge water"><i class="fas fa-droplet"></i> Water Gym</div>
+        <div class="trainer-icon">🧑‍💼</div>
+        <div class="trainer-name" style="color:var(--water-color)">LEADER PABLO</div>
+        <div class="trainer-sub">Pablo Acosta</div>
+        <div class="team-score-big" style="color:var(--water-color)" id="pablo-pts">—</div>
+        <div class="team-score-label"><i class="fas fa-bolt"></i> total points</div>
+        <div class="hp-row" style="margin-top:14px">
+          <span class="hp-label">HP</span>
+          <div class="hp-track">
+            <div class="hp-fill high" id="pablo-bar" style="width:0%"></div>
+          </div>
+        </div>
+        <div class="catch-stat" id="pablo-catches" style="color:var(--water-color)"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Team Norma Trainers -->
+  <div class="section-hd"><i class="fas fa-fire" style="color:var(--fire-color)"></i> Fire Gym · Trainers</div>
+  <div class="trainer-list" id="norma-players"></div>
+
+  <!-- Team Pablo Trainers -->
+  <div class="section-hd"><i class="fas fa-droplet" style="color:var(--water-color)"></i> Water Gym · Trainers</div>
+  <div class="trainer-list" id="pablo-players"></div>
 
   <!-- Combined Leaderboard -->
-  <div class="section-hd">📊 Combined Leaderboard</div>
-  <div id="combined-board"></div>
+  <div class="section-hd"><i class="fas fa-ranking-star" style="color:var(--pk-yellow)"></i> Overall Pokedex Rankings</div>
+  <div class="trainer-list" id="combined-board"></div>
 
   <!-- Info -->
   <div class="info-banner">
-    📊 Data is refreshed by running the CSAT board update script. Queries Snowflake live data.<br>
-    To refresh manually: <code>bash ~/DDRepos/mexico-csat-board/update_csat_board.sh</code> then reload the page.<br>
-    Scoring: CSAT with customer comment = <strong>2 pts</strong> · CSAT without comment = <strong>1 pt</strong>
+    <i class="fas fa-circle-info"></i>
+    Data is refreshed by querying Snowflake live. To update:<br>
+    <code>bash ~/DDRepos/mexico-csat-board/update_csat_board.sh</code><br>
+    <i class="fas fa-star" style="color:var(--pk-shiny)"></i> Shiny catch (with customer comment) = <strong>2 pts</strong> &nbsp;·&nbsp;
+    <i class="fas fa-circle-check" style="color:var(--pk-hp-green)"></i> Regular catch (no comment) = <strong>1 pt</strong>
   </div>
 
 </div>
@@ -357,7 +557,12 @@
 <script>
 /* ─── Helpers ────────────────────────────────────────────────── */
 function fmt(n) { return Number(n).toLocaleString(); }
-const MEDALS = ['🥇','🥈','🥉'];
+
+const MEDALS = [
+  '<i class="fas fa-trophy" style="color:#FFD700"></i>',
+  '<i class="fas fa-medal"  style="color:#C0C0C0"></i>',
+  '<i class="fas fa-medal"  style="color:#CD7F32"></i>',
+];
 
 /* ─── Load data ──────────────────────────────────────────────── */
 const data = (typeof CSAT_DATA !== 'undefined')
@@ -367,129 +572,171 @@ const data = (typeof CSAT_DATA !== 'undefined')
 /* ─── Week label ─────────────────────────────────────────────── */
 document.getElementById('week-label').textContent =
   (data.weekLabel || '—') + (data.generatedAt
-    ? '  ·  updated ' + new Date(data.generatedAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})
+    ? '  ·  updated ' + new Date(data.generatedAt).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
     : '  ·  not yet loaded');
 
-/* ─── Team scores ────────────────────────────────────────────── */
-function renderTeams() {
+/* ─── HP bar color based on percentage ──────────────────────── */
+function hpClass(pct) {
+  if (pct > 50) return 'high';
+  if (pct > 20) return 'mid';
+  return 'low';
+}
+
+/* ─── Team battle render ─────────────────────────────────────── */
+function renderBattle() {
   const players = data.players || [];
   const normaPlayers = players.filter(p => p.team === 'norma');
   const pabloPlayers = players.filter(p => p.team === 'pablo');
 
   const normaTotal = normaPlayers.reduce((s, p) => s + p.totalPoints, 0);
   const pabloTotal = pabloPlayers.reduce((s, p) => s + p.totalPoints, 0);
-  const maxTeam = Math.max(normaTotal, pabloTotal, 1);
+  const maxTeam    = Math.max(normaTotal, pabloTotal, 1);
+
+  const normaCatchTotal  = normaPlayers.reduce((s, p) => s + p.csatWithComment + p.csatNoComment, 0);
+  const pabloCatchTotal  = pabloPlayers.reduce((s, p) => s + p.csatWithComment + p.csatNoComment, 0);
+  const normaShinyTotal  = normaPlayers.reduce((s, p) => s + p.csatWithComment, 0);
+  const pabloShinyTotal  = pabloPlayers.reduce((s, p) => s + p.csatWithComment, 0);
 
   document.getElementById('norma-pts').textContent = fmt(normaTotal);
   document.getElementById('pablo-pts').textContent = fmt(pabloTotal);
 
+  document.getElementById('norma-catches').innerHTML =
+    `<i class="fas fa-star"></i>&nbsp;${normaShinyTotal} shiny &nbsp;·&nbsp; <i class="fas fa-circle-check"></i>&nbsp;${normaCatchTotal - normaShinyTotal} regular`;
+  document.getElementById('pablo-catches').innerHTML =
+    `<i class="fas fa-star"></i>&nbsp;${pabloShinyTotal} shiny &nbsp;·&nbsp; <i class="fas fa-circle-check"></i>&nbsp;${pabloCatchTotal - pabloShinyTotal} regular`;
+
+  const normaPct = (normaTotal / maxTeam * 100).toFixed(1);
+  const pabloPct = (pabloTotal / maxTeam * 100).toFixed(1);
+
   setTimeout(() => {
-    document.getElementById('norma-bar').style.width = (normaTotal / maxTeam * 100).toFixed(1) + '%';
-    document.getElementById('pablo-bar').style.width = (pabloTotal / maxTeam * 100).toFixed(1) + '%';
+    const nb = document.getElementById('norma-bar');
+    const pb = document.getElementById('pablo-bar');
+    nb.style.width = normaPct + '%';
+    nb.className = 'hp-fill ' + hpClass(normaPct);
+    pb.style.width = pabloPct + '%';
+    pb.className = 'hp-fill ' + hpClass(pabloPct);
   }, 100);
 
-  // Highlight winner
   if (normaTotal > pabloTotal) {
-    document.getElementById('norma-card').style.transform = 'scale(1.02)';
+    document.getElementById('norma-card').classList.add('winner');
   } else if (pabloTotal > normaTotal) {
-    document.getElementById('pablo-card').style.transform = 'scale(1.02)';
+    document.getElementById('pablo-card').classList.add('winner');
   }
 }
 
-/* ─── Player row HTML ────────────────────────────────────────── */
-function playerRowHTML(p, rank, maxPts) {
-  const color = p.color;
-  const pct = (p.totalPoints / Math.max(maxPts, 1) * 100).toFixed(1);
-  const rankLabel = rank <= 3 ? MEDALS[rank - 1] : rank + '.';
+/* ─── Single trainer row HTML ────────────────────────────────── */
+function trainerRowHTML(p, rank, maxPts) {
+  const color   = p.color;
+  const pct     = (p.totalPoints / Math.max(maxPts, 1) * 100).toFixed(1);
+  const rankLabel = rank <= 3
+    ? MEDALS[rank - 1]
+    : `<span style="color:var(--pk-muted)">${rank}</span>`;
 
   return `
-    <div class="player-row">
+    <div class="trainer-row">
       <div class="rank-num">${rankLabel}</div>
-      <div class="avatar" style="background:${color}22; color:${color}">${p.initials}</div>
+      <div class="trainer-avatar" style="background:${color}18; color:${color}; border-color:${color}44">
+        ${p.initials}
+      </div>
       <div>
-        <div class="player-name">${p.name}</div>
-        <div class="csat-chip-row">
-          <span class="csat-chip with-comment">
-            <span class="n">${p.csatWithComment}</span> w/ comment (×2)
-          </span>
-          <span class="csat-chip no-comment">
-            <span class="n">${p.csatNoComment}</span> w/o comment (×1)
-          </span>
+        <div class="trainer-row-name">${p.name}</div>
+        <div class="mini-catches">
+          ${p.csatWithComment > 0
+            ? `<span class="mini-catch shiny"><i class="fas fa-star"></i> ${p.csatWithComment} shiny catch${p.csatWithComment !== 1 ? 'es' : ''}</span>`
+            : ''}
+          ${p.csatNoComment > 0
+            ? `<span class="mini-catch regular"><i class="fas fa-circle-check"></i> ${p.csatNoComment} regular catch${p.csatNoComment !== 1 ? 'es' : ''}</span>`
+            : ''}
+          ${p.csatWithComment === 0 && p.csatNoComment === 0
+            ? `<span style="font-size:.72rem;color:var(--pk-muted)"><i class="fas fa-clock"></i> No catches yet</span>`
+            : ''}
         </div>
-        <div class="prog-wrap">
-          <div class="prog-track">
-            <div class="prog-fill" style="width:${pct}%; background:${color}88"></div>
+        <div class="player-hp-wrap">
+          <div class="hp-track" style="height:4px">
+            <div class="hp-fill ${hpClass(pct)}" style="width:${pct}%"></div>
           </div>
         </div>
       </div>
-      <div class="player-pts-badge" style="color:${color}">${fmt(p.totalPoints)}</div>
+      <div>
+        <div class="score-pts" style="color:${color}">${fmt(p.totalPoints)}</div>
+        <div class="score-pts-label">pts</div>
+      </div>
     </div>`;
 }
 
-/* ─── Team sections ──────────────────────────────────────────── */
-function renderTeamSection(containerId, teamId, teamColor, teamName, teamManager) {
+/* ─── Team section render ────────────────────────────────────── */
+function renderTeamSection(containerId, teamId, teamColor, teamIcon, teamName) {
   const players = (data.players || [])
     .filter(p => p.team === teamId)
     .sort((a, b) => b.totalPoints - a.totalPoints);
+
   const container = document.getElementById(containerId);
+  const maxPts    = Math.max(...players.map(p => p.totalPoints), 1);
+  const total     = players.reduce((s, p) => s + p.totalPoints, 0);
 
-  if (!players.length) {
-    container.innerHTML = '<div class="player-row"><div style="color:var(--dd-muted);font-size:.85rem;padding:4px 0">No data yet — run the update script. 📊</div></div>';
-    return;
-  }
-
-  const maxPts = Math.max(...players.map(p => p.totalPoints), 1);
   container.innerHTML = `
-    <div class="team-section-header">
-      <div class="team-dot" style="background:${teamColor}"></div>
-      <div class="team-section-title">${teamName}</div>
-      <div class="team-section-score" style="color:${teamColor}">
-        ${fmt(players.reduce((s, p) => s + p.totalPoints, 0))} pts
-      </div>
+    <div class="trainer-list-header">
+      <i class="${teamIcon}" style="color:${teamColor}"></i>
+      <div class="trainer-list-title" style="color:${teamColor}">${teamName}</div>
+      <div class="trainer-list-total" style="color:${teamColor}">${fmt(total)} pts</div>
     </div>
-    ${players.map((p, i) => playerRowHTML(p, i + 1, maxPts)).join('')}`;
+    ${players.length
+      ? players.map((p, i) => trainerRowHTML(p, i + 1, maxPts)).join('')
+      : '<div class="trainer-row"><span style="color:var(--pk-muted);font-size:.85rem"><i class="fas fa-clock"></i> No data yet — run the update script.</span></div>'}`;
 }
 
 /* ─── Combined leaderboard ───────────────────────────────────── */
 function renderCombined() {
-  const all = [...(data.players || [])].sort((a, b) => b.totalPoints - a.totalPoints);
+  const all    = [...(data.players || [])].sort((a, b) => b.totalPoints - a.totalPoints);
   const maxPts = Math.max(...all.map(p => p.totalPoints), 1);
-  const container = document.getElementById('combined-board');
 
   if (!all.length) {
-    container.innerHTML = '<p style="color:var(--dd-muted);font-size:.85rem;text-align:center;padding:20px">No data yet.</p>';
+    document.getElementById('combined-board').innerHTML =
+      '<div class="trainer-row"><span style="color:var(--pk-muted)"><i class="fas fa-clock"></i> No data yet.</span></div>';
     return;
   }
 
-  const teamBadge = (team) => team === 'norma'
-    ? '<span style="font-size:.65rem;background:rgba(155,89,208,.15);border:1px solid rgba(155,89,208,.3);border-radius:4px;padding:1px 6px;color:#9B59D0;margin-left:6px">Norma</span>'
-    : '<span style="font-size:.65rem;background:rgba(224,120,50,.15);border:1px solid rgba(224,120,50,.3);border-radius:4px;padding:1px 6px;color:#E07832;margin-left:6px">Pablo</span>';
-
-  container.innerHTML = `<div class="team-section">${
+  document.getElementById('combined-board').innerHTML =
+    '<div class="trainer-list-header">' +
+    '<i class="fas fa-ranking-star" style="color:var(--pk-yellow)"></i>' +
+    '<div class="trainer-list-title" style="color:var(--pk-yellow)">All Trainers</div>' +
+    '</div>' +
     all.map((p, i) => {
-      const color = p.color;
-      const pct = (p.totalPoints / maxPts * 100).toFixed(1);
-      const rankLabel = i < 3 ? MEDALS[i] : (i + 1) + '.';
+      const typeTag = p.team === 'norma'
+        ? '<span class="team-tag fire"><i class="fas fa-fire"></i> Fire</span>'
+        : '<span class="team-tag water"><i class="fas fa-droplet"></i> Water</span>';
+      const color   = p.color;
+      const pct     = (p.totalPoints / maxPts * 100).toFixed(1);
+      const rankLabel = i < 3 ? MEDALS[i] : `<span style="color:var(--pk-muted)">${i + 1}</span>`;
       return `
-        <div class="player-row">
+        <div class="trainer-row">
           <div class="rank-num">${rankLabel}</div>
-          <div class="avatar" style="background:${color}22; color:${color}">${p.initials}</div>
+          <div class="trainer-avatar" style="background:${color}18; color:${color}; border-color:${color}44">${p.initials}</div>
           <div>
-            <div class="player-name">${p.name} ${teamBadge(p.team)}</div>
-            <div class="csat-chip-row">
-              <span class="csat-chip with-comment"><span class="n">${p.csatWithComment}</span> w/ comment</span>
-              <span class="csat-chip no-comment"><span class="n">${p.csatNoComment}</span> w/o comment</span>
+            <div class="trainer-row-name">${p.name} ${typeTag}</div>
+            <div class="mini-catches">
+              ${p.csatWithComment > 0
+                ? `<span class="mini-catch shiny"><i class="fas fa-star"></i> ${p.csatWithComment} shiny</span>`
+                : ''}
+              ${p.csatNoComment > 0
+                ? `<span class="mini-catch regular"><i class="fas fa-circle-check"></i> ${p.csatNoComment} regular</span>`
+                : ''}
+              ${p.csatWithComment === 0 && p.csatNoComment === 0
+                ? `<span style="font-size:.72rem;color:var(--pk-muted)"><i class="fas fa-clock"></i> No catches yet</span>`
+                : ''}
             </div>
-            <div class="prog-wrap">
-              <div class="prog-track">
-                <div class="prog-fill" style="width:${pct}%; background:${color}88"></div>
+            <div class="player-hp-wrap">
+              <div class="hp-track" style="height:4px">
+                <div class="hp-fill ${hpClass(pct)}" style="width:${pct}%"></div>
               </div>
             </div>
           </div>
-          <div class="player-pts-badge" style="color:${color}">${fmt(p.totalPoints)}</div>
+          <div>
+            <div class="score-pts" style="color:${color}">${fmt(p.totalPoints)}</div>
+            <div class="score-pts-label">pts</div>
+          </div>
         </div>`;
-    }).join('')
-  }</div>`;
+    }).join('');
 }
 
 /* ─── Starfield ──────────────────────────────────────────────── */
@@ -508,7 +755,7 @@ function renderCombined() {
   function draw(t) {
     cx.clearRect(0, 0, cv.width, cv.height);
     stars.forEach(s => {
-      const a = .15 + .85 * Math.abs(Math.sin(s.phase + t * s.speed));
+      const a = .12 + .88 * Math.abs(Math.sin(s.phase + t * s.speed));
       cx.beginPath(); cx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
       cx.fillStyle = `rgba(255,255,255,${a})`; cx.fill();
     });
@@ -520,9 +767,9 @@ function renderCombined() {
 })();
 
 /* ─── Init ───────────────────────────────────────────────────── */
-renderTeams();
-renderTeamSection('norma-players', 'norma', '#9B59D0', 'Team Norma', 'Norma Ruy Sanchez');
-renderTeamSection('pablo-players', 'pablo', '#E07832', 'Team Pablo', 'Pablo Acosta');
+renderBattle();
+renderTeamSection('norma-players', 'norma', 'var(--fire-color)', 'fas fa-fire', 'Fire Gym — Team Norma');
+renderTeamSection('pablo-players', 'pablo', 'var(--water-color)', 'fas fa-droplet', 'Water Gym — Team Pablo');
 renderCombined();
 </script>
 </body>
