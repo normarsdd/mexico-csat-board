@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mexico CSAT Board</title>
+  <script src="data.js"></script>
+  <style>
+    /* ── Palette ─────────────────────────────────────────────── */
+    :root {
+      --dd-purple:        #632CA6;
+      --dd-purple-light:  #9B59D0;
+      --dd-purple-dark:   #3A1066;
+      --dd-bg:            #0B0618;
+      --dd-surface:       #140A2E;
+      --dd-card:          #1E0F3F;
+      --dd-border:        #2D1B5E;
+      --dd-gold:          #FFD700;
+      --dd-gold-light:    #FFF0A0;
+      --dd-silver:        #C0C0C0;
+      --dd-bronze:        #CD7F32;
+      --dd-text:          #F0E8FF;
+      --dd-muted:         #8B7AA8;
+      --dd-green:         #52C87A;
+      --dd-red:           #E05252;
+      --norma-color:      #9B59D0;
+      --pablo-color:      #E07832;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--dd-bg);
+      color: var(--dd-text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Starfield ───────────────────────────────────────────── */
+    #starfield { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+
+    /* ── Layout ──────────────────────────────────────────────── */
+    .page {
+      position: relative; z-index: 1;
+      max-width: 1100px; margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* ── Header ──────────────────────────────────────────────── */
+    header { text-align: center; padding: 44px 0 28px; }
+
+    .logo-row {
+      display: flex; align-items: center; justify-content: center;
+      gap: 10px; margin-bottom: 18px;
+    }
+    .logo-row svg { width: 38px; height: 38px; }
+    .wordmark {
+      font-size: 1.2rem; font-weight: 700; letter-spacing: 2.5px;
+      text-transform: uppercase; color: var(--dd-purple-light);
+    }
+
+    .trophy { font-size: 4rem; display: block; margin-bottom: 6px;
+      animation: glow 2.8s ease-in-out infinite;
+      filter: drop-shadow(0 0 18px #00C853);
+    }
+    @keyframes glow {
+      0%,100% { filter: drop-shadow(0 0 14px #00C853); transform: scale(1); }
+      50%      { filter: drop-shadow(0 0 34px #69F0AE); transform: scale(1.05); }
+    }
+
+    h1 {
+      font-size: clamp(1.9rem, 5vw, 3.2rem); font-weight: 800;
+      letter-spacing: -0.5px; line-height: 1.1;
+      background: linear-gradient(135deg, #00C853 0%, var(--dd-purple-light) 55%, #FFD700 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer 4s linear infinite;
+    }
+    @keyframes shimmer { to { background-position: 200% center; } }
+
+    .subtitle { color: var(--dd-muted); font-size: 1rem; margin-top: 10px; }
+    .subtitle strong { color: var(--dd-purple-light); }
+
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      margin-top: 18px; background: var(--dd-card);
+      border: 1px solid var(--dd-border); border-radius: 999px;
+      padding: 5px 16px; font-size: 0.8rem; color: var(--dd-muted);
+    }
+    .dot { width: 7px; height: 7px; border-radius: 50%;
+      background: var(--dd-green); box-shadow: 0 0 8px var(--dd-green);
+      animation: blink 1.5s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+    /* ── Section header ──────────────────────────────────────── */
+    .section-hd {
+      font-size: 0.72rem; text-transform: uppercase; letter-spacing: 3px;
+      color: var(--dd-muted); margin: 44px 0 18px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .section-hd::after { content:''; flex:1; height:1px; background:var(--dd-border); }
+
+    /* ── Team Battle ─────────────────────────────────────────── */
+    .team-battle {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 16px;
+      align-items: center;
+    }
+    @media(max-width:640px) { .team-battle { grid-template-columns: 1fr; } }
+
+    .team-card {
+      background: var(--dd-card); border-radius: 18px;
+      padding: 28px 24px; text-align: center;
+      border: 2px solid;
+      position: relative; overflow: hidden;
+      transition: transform .2s;
+    }
+    .team-card:hover { transform: translateY(-4px); }
+    .team-card.norma { border-color: var(--norma-color); box-shadow: 0 0 40px rgba(155,89,208,.15); }
+    .team-card.pablo { border-color: var(--pablo-color); box-shadow: 0 0 40px rgba(224,120,50,.15); }
+
+    .team-glow {
+      position: absolute; top: -60px; left: 50%; transform: translateX(-50%);
+      width: 200px; height: 200px; border-radius: 50%;
+      opacity: .10; filter: blur(50px); pointer-events: none;
+    }
+
+    .team-emoji { font-size: 2.5rem; display: block; margin-bottom: 8px; }
+    .team-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
+    .team-manager { font-size: 0.78rem; color: var(--dd-muted); margin-bottom: 14px; }
+    .team-pts {
+      font-size: 3rem; font-weight: 800; line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+    .team-pts-label { font-size: 0.72rem; color: var(--dd-muted); letter-spacing: 1px; text-transform: uppercase; margin-top: 4px; }
+    .team-members-count { font-size: 0.78rem; color: var(--dd-muted); margin-top: 10px; }
+
+    .team-prog-wrap { margin-top: 16px; }
+    .team-prog-track {
+      height: 8px; background: rgba(255,255,255,.07);
+      border-radius: 999px; overflow: hidden;
+    }
+    .team-prog-fill {
+      height: 100%; border-radius: 999px;
+      transition: width 1.2s cubic-bezier(.34,1.56,.64,1);
+    }
+
+    .vs-badge {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 6px;
+    }
+    .vs-text {
+      font-size: 1.8rem; font-weight: 900; color: var(--dd-muted);
+      letter-spacing: 2px;
+    }
+    .vs-sub { font-size: 0.68rem; color: var(--dd-muted); letter-spacing: 2px; text-transform: uppercase; }
+
+    /* ── Scoring legend ──────────────────────────────────────── */
+    .legend {
+      display: flex; gap: 12px; justify-content: center;
+      flex-wrap: wrap; margin-top: 16px;
+    }
+    .legend-chip {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--dd-card); border: 1px solid var(--dd-border);
+      border-radius: 8px; padding: 8px 14px; font-size: 0.8rem;
+    }
+    .legend-pts { font-weight: 700; font-size: 1rem; color: var(--dd-green); }
+
+    /* ── Team section ────────────────────────────────────────── */
+    .team-section {
+      background: var(--dd-card); border-radius: 16px;
+      border: 1px solid var(--dd-border);
+      overflow: hidden; margin-bottom: 16px;
+    }
+    .team-section-header {
+      padding: 16px 20px;
+      display: flex; align-items: center; gap: 12px;
+      border-bottom: 1px solid var(--dd-border);
+    }
+    .team-section-header .team-dot {
+      width: 12px; height: 12px; border-radius: 50%;
+    }
+    .team-section-title { font-weight: 700; font-size: 1rem; flex: 1; }
+    .team-section-score { font-size: 1.1rem; font-weight: 800; }
+
+    /* ── Player rows ─────────────────────────────────────────── */
+    .player-row {
+      padding: 14px 20px;
+      display: grid;
+      grid-template-columns: 28px 44px 1fr auto;
+      align-items: center; gap: 14px;
+      border-bottom: 1px solid rgba(255,255,255,.04);
+      transition: background .15s;
+    }
+    .player-row:last-child { border-bottom: none; }
+    .player-row:hover { background: rgba(255,255,255,.02); }
+
+    .rank-num { font-size: 0.95rem; color: var(--dd-muted); font-weight: 700; text-align: center; }
+
+    .avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.82rem; font-weight: 700; flex-shrink: 0;
+    }
+
+    .player-name { font-weight: 600; font-size: 0.92rem; }
+    .player-stats { font-size: 0.73rem; color: var(--dd-muted); margin-top: 3px; }
+    .player-pts-badge {
+      font-size: 1.3rem; font-weight: 800;
+      font-variant-numeric: tabular-nums; text-align: right;
+    }
+
+    /* ── Prog bar ────────────────────────────────────────────── */
+    .prog-wrap { margin-top: 5px; }
+    .prog-track { height: 4px; background: rgba(255,255,255,.07); border-radius: 999px; overflow: hidden; }
+    .prog-fill { height: 100%; border-radius: 999px; transition: width .9s cubic-bezier(.34,1.56,.64,1); }
+
+    /* ── CSAT breakdown chips ────────────────────────────────── */
+    .csat-chip-row {
+      display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px;
+    }
+    .csat-chip {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08);
+      border-radius: 6px; padding: 2px 7px; font-size: 0.68rem;
+    }
+    .csat-chip .n { font-weight: 700; }
+    .with-comment .n { color: var(--dd-green); }
+    .no-comment .n { color: #9B59D0; }
+
+    /* ── Info banner ─────────────────────────────────────────── */
+    .info-banner {
+      background: rgba(99,44,166,.12); border: 1px solid rgba(99,44,166,.3);
+      border-radius: 10px; padding: 12px 16px; font-size: 0.8rem;
+      color: var(--dd-muted); margin-top: 14px; line-height: 1.6;
+    }
+    .info-banner code {
+      background: rgba(255,255,255,.07); border-radius: 4px;
+      padding: 1px 6px; font-size: 0.78rem; color: var(--dd-purple-light);
+    }
+
+    /* ── Toast ───────────────────────────────────────────────── */
+    #toast {
+      position: fixed; bottom: 28px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--dd-card); border: 1px solid var(--dd-purple);
+      border-radius: 12px; padding: 12px 22px;
+      font-size: 0.88rem; box-shadow: 0 8px 32px rgba(0,0,0,.4);
+      z-index: 1000; transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+      pointer-events: none;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+
+    .medal { font-size: 1.2rem; }
+
+    @media(max-width:500px) {
+      .player-row { grid-template-columns: 24px 36px 1fr auto; gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="starfield"></canvas>
+<div id="toast">📊 Board updated!</div>
+
+<div class="page">
+
+  <!-- Header -->
+  <header>
+    <div class="logo-row">
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="48" fill="#632CA6" opacity=".2"/>
+        <rect x="26" y="26" width="48" height="48" rx="6" fill="#632CA6"/>
+        <circle cx="50" cy="46" r="10" fill="white"/>
+        <circle cx="50" cy="46" r="4"  fill="#632CA6"/>
+        <rect   x="34" y="62" width="32" height="4" rx="2" fill="white"/>
+      </svg>
+      <span class="wordmark">Datadog</span>
+    </div>
+    <span class="trophy">⭐</span>
+    <h1>Mexico CSAT Board</h1>
+    <p class="subtitle">Q2 2026 · Mexico TSE Team · Idea by <strong>Fer Ramirez</strong> 🇲🇽</p>
+    <div class="status-pill">
+      <span class="dot"></span>
+      <span id="week-label">Loading…</span>
+    </div>
+  </header>
+
+  <!-- Scoring legend -->
+  <div class="legend">
+    <div class="legend-chip">💬 CSAT with comment <span class="legend-pts">= 2 pts</span></div>
+    <div class="legend-chip">✅ CSAT without comment <span class="legend-pts">= 1 pt</span></div>
+  </div>
+
+  <!-- Team Battle -->
+  <div class="section-hd">🏆 Team Standings</div>
+  <div class="team-battle" id="team-battle">
+    <div class="team-card norma" id="norma-card">
+      <div class="team-glow" style="background:var(--norma-color)"></div>
+      <span class="team-emoji">💜</span>
+      <div class="team-name" style="color:var(--norma-color)">Team Norma</div>
+      <div class="team-manager">Norma Ruy Sanchez</div>
+      <div class="team-pts" style="color:var(--norma-color)" id="norma-pts">—</div>
+      <div class="team-pts-label">points</div>
+      <div class="team-prog-wrap">
+        <div class="team-prog-track">
+          <div class="team-prog-fill" id="norma-bar" style="background:var(--norma-color); width:0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="vs-badge">
+      <div class="vs-text">VS</div>
+      <div class="vs-sub">CSAT Cup</div>
+    </div>
+
+    <div class="team-card pablo" id="pablo-card">
+      <div class="team-glow" style="background:var(--pablo-color)"></div>
+      <span class="team-emoji">🧡</span>
+      <div class="team-name" style="color:var(--pablo-color)">Team Pablo</div>
+      <div class="team-manager">Pablo Acosta</div>
+      <div class="team-pts" style="color:var(--pablo-color)" id="pablo-pts">—</div>
+      <div class="team-pts-label">points</div>
+      <div class="team-prog-wrap">
+        <div class="team-prog-track">
+          <div class="team-prog-fill" id="pablo-bar" style="background:var(--pablo-color); width:0%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Team Norma Players -->
+  <div class="section-hd">💜 Team Norma · Individual Scores</div>
+  <div class="team-section" id="norma-players"></div>
+
+  <!-- Team Pablo Players -->
+  <div class="section-hd">🧡 Team Pablo · Individual Scores</div>
+  <div class="team-section" id="pablo-players"></div>
+
+  <!-- Combined Leaderboard -->
+  <div class="section-hd">📊 Combined Leaderboard</div>
+  <div id="combined-board"></div>
+
+  <!-- Info -->
+  <div class="info-banner">
+    📊 Data is refreshed by running the CSAT board update script. Queries Snowflake live data.<br>
+    To refresh manually: <code>bash ~/Documents/mexico-csat/update_csat_board.sh</code> then reload the page.<br>
+    Scoring: CSAT with customer comment = <strong>2 pts</strong> · CSAT without comment = <strong>1 pt</strong>
+  </div>
+
+</div>
+
+<script>
+/* ─── Helpers ────────────────────────────────────────────────── */
+function fmt(n) { return Number(n).toLocaleString(); }
+const MEDALS = ['🥇','🥈','🥉'];
+
+/* ─── Load data ──────────────────────────────────────────────── */
+const data = (typeof CSAT_DATA !== 'undefined')
+  ? CSAT_DATA
+  : { generatedAt: null, weekLabel: '—', teams: [], players: [] };
+
+/* ─── Week label ─────────────────────────────────────────────── */
+document.getElementById('week-label').textContent =
+  (data.weekLabel || '—') + (data.generatedAt
+    ? '  ·  updated ' + new Date(data.generatedAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})
+    : '  ·  not yet loaded');
+
+/* ─── Team scores ────────────────────────────────────────────── */
+function renderTeams() {
+  const players = data.players || [];
+  const normaPlayers = players.filter(p => p.team === 'norma');
+  const pabloPlayers = players.filter(p => p.team === 'pablo');
+
+  const normaTotal = normaPlayers.reduce((s, p) => s + p.totalPoints, 0);
+  const pabloTotal = pabloPlayers.reduce((s, p) => s + p.totalPoints, 0);
+  const maxTeam = Math.max(normaTotal, pabloTotal, 1);
+
+  document.getElementById('norma-pts').textContent = fmt(normaTotal);
+  document.getElementById('pablo-pts').textContent = fmt(pabloTotal);
+
+  setTimeout(() => {
+    document.getElementById('norma-bar').style.width = (normaTotal / maxTeam * 100).toFixed(1) + '%';
+    document.getElementById('pablo-bar').style.width = (pabloTotal / maxTeam * 100).toFixed(1) + '%';
+  }, 100);
+
+  // Highlight winner
+  if (normaTotal > pabloTotal) {
+    document.getElementById('norma-card').style.transform = 'scale(1.02)';
+  } else if (pabloTotal > normaTotal) {
+    document.getElementById('pablo-card').style.transform = 'scale(1.02)';
+  }
+}
+
+/* ─── Player row HTML ────────────────────────────────────────── */
+function playerRowHTML(p, rank, maxPts) {
+  const color = p.color;
+  const pct = (p.totalPoints / Math.max(maxPts, 1) * 100).toFixed(1);
+  const rankLabel = rank <= 3 ? MEDALS[rank - 1] : rank + '.';
+
+  return `
+    <div class="player-row">
+      <div class="rank-num">${rankLabel}</div>
+      <div class="avatar" style="background:${color}22; color:${color}">${p.initials}</div>
+      <div>
+        <div class="player-name">${p.name}</div>
+        <div class="csat-chip-row">
+          <span class="csat-chip with-comment">
+            <span class="n">${p.csatWithComment}</span> w/ comment (×2)
+          </span>
+          <span class="csat-chip no-comment">
+            <span class="n">${p.csatNoComment}</span> w/o comment (×1)
+          </span>
+        </div>
+        <div class="prog-wrap">
+          <div class="prog-track">
+            <div class="prog-fill" style="width:${pct}%; background:${color}88"></div>
+          </div>
+        </div>
+      </div>
+      <div class="player-pts-badge" style="color:${color}">${fmt(p.totalPoints)}</div>
+    </div>`;
+}
+
+/* ─── Team sections ──────────────────────────────────────────── */
+function renderTeamSection(containerId, teamId, teamColor, teamName, teamManager) {
+  const players = (data.players || [])
+    .filter(p => p.team === teamId)
+    .sort((a, b) => b.totalPoints - a.totalPoints);
+  const container = document.getElementById(containerId);
+
+  if (!players.length) {
+    container.innerHTML = '<div class="player-row"><div style="color:var(--dd-muted);font-size:.85rem;padding:4px 0">No data yet — run the update script. 📊</div></div>';
+    return;
+  }
+
+  const maxPts = Math.max(...players.map(p => p.totalPoints), 1);
+  container.innerHTML = `
+    <div class="team-section-header">
+      <div class="team-dot" style="background:${teamColor}"></div>
+      <div class="team-section-title">${teamName}</div>
+      <div class="team-section-score" style="color:${teamColor}">
+        ${fmt(players.reduce((s, p) => s + p.totalPoints, 0))} pts
+      </div>
+    </div>
+    ${players.map((p, i) => playerRowHTML(p, i + 1, maxPts)).join('')}`;
+}
+
+/* ─── Combined leaderboard ───────────────────────────────────── */
+function renderCombined() {
+  const all = [...(data.players || [])].sort((a, b) => b.totalPoints - a.totalPoints);
+  const maxPts = Math.max(...all.map(p => p.totalPoints), 1);
+  const container = document.getElementById('combined-board');
+
+  if (!all.length) {
+    container.innerHTML = '<p style="color:var(--dd-muted);font-size:.85rem;text-align:center;padding:20px">No data yet.</p>';
+    return;
+  }
+
+  const teamBadge = (team) => team === 'norma'
+    ? '<span style="font-size:.65rem;background:rgba(155,89,208,.15);border:1px solid rgba(155,89,208,.3);border-radius:4px;padding:1px 6px;color:#9B59D0;margin-left:6px">Norma</span>'
+    : '<span style="font-size:.65rem;background:rgba(224,120,50,.15);border:1px solid rgba(224,120,50,.3);border-radius:4px;padding:1px 6px;color:#E07832;margin-left:6px">Pablo</span>';
+
+  container.innerHTML = `<div class="team-section">${
+    all.map((p, i) => {
+      const color = p.color;
+      const pct = (p.totalPoints / maxPts * 100).toFixed(1);
+      const rankLabel = i < 3 ? MEDALS[i] : (i + 1) + '.';
+      return `
+        <div class="player-row">
+          <div class="rank-num">${rankLabel}</div>
+          <div class="avatar" style="background:${color}22; color:${color}">${p.initials}</div>
+          <div>
+            <div class="player-name">${p.name} ${teamBadge(p.team)}</div>
+            <div class="csat-chip-row">
+              <span class="csat-chip with-comment"><span class="n">${p.csatWithComment}</span> w/ comment</span>
+              <span class="csat-chip no-comment"><span class="n">${p.csatNoComment}</span> w/o comment</span>
+            </div>
+            <div class="prog-wrap">
+              <div class="prog-track">
+                <div class="prog-fill" style="width:${pct}%; background:${color}88"></div>
+              </div>
+            </div>
+          </div>
+          <div class="player-pts-badge" style="color:${color}">${fmt(p.totalPoints)}</div>
+        </div>`;
+    }).join('')
+  }</div>`;
+}
+
+/* ─── Starfield ──────────────────────────────────────────────── */
+(function() {
+  const cv = document.getElementById('starfield');
+  const cx = cv.getContext('2d');
+  let stars = [];
+  function resize() { cv.width = innerWidth; cv.height = innerHeight; }
+  function init() {
+    stars = Array.from({length: 160}, () => ({
+      x: Math.random() * cv.width, y: Math.random() * cv.height,
+      r: Math.random() * 1.1 + .2, phase: Math.random() * Math.PI * 2,
+      speed: Math.random() * .007 + .003,
+    }));
+  }
+  function draw(t) {
+    cx.clearRect(0, 0, cv.width, cv.height);
+    stars.forEach(s => {
+      const a = .15 + .85 * Math.abs(Math.sin(s.phase + t * s.speed));
+      cx.beginPath(); cx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      cx.fillStyle = `rgba(255,255,255,${a})`; cx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  resize(); init();
+  addEventListener('resize', () => { resize(); init(); });
+  requestAnimationFrame(draw);
+})();
+
+/* ─── Init ───────────────────────────────────────────────────── */
+renderTeams();
+renderTeamSection('norma-players', 'norma', '#9B59D0', 'Team Norma', 'Norma Ruy Sanchez');
+renderTeamSection('pablo-players', 'pablo', '#E07832', 'Team Pablo', 'Pablo Acosta');
+renderCombined();
+</script>
+</body>
+</html>
