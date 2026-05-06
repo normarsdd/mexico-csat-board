@@ -36,7 +36,8 @@
 
     body {
       font-family: 'Segoe UI', system-ui, sans-serif;
-      background: linear-gradient(to bottom, #03030F 0%, #080818 30%, #060612 100%);
+      background: linear-gradient(to bottom,
+        #2471A3 0%, #2E86C1 25%, #5DADE2 55%, #A9CCE3 80%, #D6EAF8 100%);
       color: var(--pk-text);
       min-height: 100vh;
       overflow-x: hidden;
@@ -45,25 +46,57 @@
     /* ── Fixed background layers ─────────────────────────────── */
     #starfield { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
 
-    /* Moon */
-    .moon {
-      position: fixed; top: 48px; right: 80px;
-      width: 56px; height: 56px; border-radius: 50%;
-      background: radial-gradient(circle at 35% 35%, #FFFDE7, #FFF9C4);
-      box-shadow: 0 0 20px rgba(255,253,231,.8), 0 0 60px rgba(255,253,231,.3), 0 0 100px rgba(255,253,231,.1);
+    /* Sun */
+    .sun {
+      position: fixed; top: 40px; left: 80px;
+      width: 70px; height: 70px; border-radius: 50%;
+      background: radial-gradient(circle at 40% 40%, #FFF176, #FFD600);
+      box-shadow: 0 0 0 12px rgba(255,235,0,.15),
+                  0 0 0 28px rgba(255,235,0,.08),
+                  0 0 60px rgba(255,220,0,.5),
+                  0 0 120px rgba(255,200,0,.25);
       pointer-events: none; z-index: 1;
+      animation: sun-pulse 4s ease-in-out infinite;
     }
-    .moon::before {
-      content: '';
-      position: absolute; top: 10px; left: 12px;
-      width: 10px; height: 10px; border-radius: 50%;
-      background: rgba(0,0,0,.07);
+    @keyframes sun-pulse {
+      0%,100% { box-shadow: 0 0 0 12px rgba(255,235,0,.15), 0 0 0 28px rgba(255,235,0,.08), 0 0 60px rgba(255,220,0,.5), 0 0 120px rgba(255,200,0,.25); }
+      50%      { box-shadow: 0 0 0 18px rgba(255,235,0,.2),  0 0 0 40px rgba(255,235,0,.1),  0 0 80px rgba(255,220,0,.6), 0 0 160px rgba(255,200,0,.3); }
     }
-    .moon::after {
-      content: '';
-      position: absolute; top: 24px; left: 28px;
-      width: 7px; height: 7px; border-radius: 50%;
-      background: rgba(0,0,0,.06);
+
+    /* Clouds */
+    .cloud {
+      position: fixed; pointer-events: none; z-index: 1;
+      animation: cloud-drift linear infinite;
+    }
+    .cloud-body {
+      background: rgba(255,255,255,.88);
+      border-radius: 999px;
+      position: relative;
+      box-shadow: 0 4px 12px rgba(0,0,0,.08);
+    }
+    .cloud-body::before, .cloud-body::after {
+      content: ''; position: absolute;
+      background: rgba(255,255,255,.88);
+      border-radius: 50%;
+    }
+    .cloud-1 { top: 80px; animation-duration: 60s; animation-delay: 0s; }
+    .cloud-1 .cloud-body { width: 110px; height: 36px; }
+    .cloud-1 .cloud-body::before { width: 56px; height: 56px; top: -28px; left: 14px; }
+    .cloud-1 .cloud-body::after  { width: 40px; height: 40px; top: -20px; left: 52px; }
+
+    .cloud-2 { top: 130px; animation-duration: 90s; animation-delay: -30s; }
+    .cloud-2 .cloud-body { width: 80px; height: 26px; }
+    .cloud-2 .cloud-body::before { width: 40px; height: 40px; top: -22px; left: 10px; }
+    .cloud-2 .cloud-body::after  { width: 30px; height: 30px; top: -14px; left: 38px; }
+
+    .cloud-3 { top: 60px; animation-duration: 75s; animation-delay: -50s; }
+    .cloud-3 .cloud-body { width: 140px; height: 44px; }
+    .cloud-3 .cloud-body::before { width: 70px; height: 70px; top: -38px; left: 18px; }
+    .cloud-3 .cloud-body::after  { width: 52px; height: 52px; top: -28px; left: 70px; }
+
+    @keyframes cloud-drift {
+      from { transform: translateX(-200px); }
+      to   { transform: translateX(calc(100vw + 200px)); }
     }
 
     /* Landscape SVG */
@@ -84,7 +117,7 @@
     .grass-blade {
       flex: 1 0 0;
       min-width: 4px; max-width: 10px;
-      background: #0A3A0A;
+      background: #2E7D32;
       transform-origin: bottom center;
       animation: sway linear infinite;
       border-radius: 2px 2px 0 0;
@@ -619,50 +652,47 @@
 
 <!-- Background layers -->
 <canvas id="starfield"></canvas>
-<div class="moon"></div>
+<div class="sun"></div>
 
-<!-- Pokemon landscape: mountains → hills → trees → grass -->
+<!-- Drifting clouds -->
+<div class="cloud cloud-1"><div class="cloud-body"></div></div>
+<div class="cloud cloud-2"><div class="cloud-body"></div></div>
+<div class="cloud cloud-3"><div class="cloud-body"></div></div>
+
+<!-- Pokemon daytime landscape -->
 <div id="landscape">
   <svg viewBox="0 0 1440 320" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
-    <!-- Far mountains -->
+    <!-- Distant mountains (blue-purple, misty) -->
     <path d="M0,260 L60,180 L130,230 L220,150 L320,210 L430,130 L540,195 L650,115 L770,170 L890,100 L1010,160 L1130,90 L1250,145 L1380,95 L1440,125 L1440,320 L0,320 Z"
-      fill="#0A0820"/>
-    <!-- Mid hills -->
-    <path d="M0,290 Q100,260 220,278 Q360,298 500,268 Q650,236 800,262 Q950,288 1100,255 Q1260,222 1440,250 L1440,320 L0,320 Z"
-      fill="#080616"/>
-    <!-- Pine tree silhouettes -->
-    <g fill="#050510">
-      <polygon points="40,290 52,254 64,290"/>
-      <polygon points="48,285 52,264 56,285"/>
-      <polygon points="90,292 106,248 122,292"/>
-      <polygon points="100,286 106,256 112,286"/>
-      <polygon points="160,291 174,252 188,291"/>
-      <polygon points="168,284 174,260 180,284"/>
-      <polygon points="240,290 258,240 276,290"/>
-      <polygon points="250,283 258,250 266,283"/>
-      <polygon points="340,292 352,258 364,292"/>
-      <polygon points="346,285 352,264 358,285"/>
-      <polygon points="440,290 456,246 472,290"/>
-      <polygon points="448,282 456,255 464,282"/>
-      <polygon points="540,292 552,255 564,292"/>
-      <polygon points="546,285 552,263 558,285"/>
-      <polygon points="660,290 678,244 696,290"/>
-      <polygon points="669,283 678,252 687,283"/>
-      <polygon points="780,291 795,250 810,291"/>
-      <polygon points="787,283 795,258 803,283"/>
-      <polygon points="900,290 916,248 932,290"/>
-      <polygon points="908,282 916,256 924,282"/>
-      <polygon points="1010,292 1026,252 1042,292"/>
-      <polygon points="1018,284 1026,260 1034,284"/>
-      <polygon points="1120,290 1138,246 1156,290"/>
-      <polygon points="1129,282 1138,254 1147,282"/>
-      <polygon points="1250,292 1264,255 1278,292"/>
-      <polygon points="1257,285 1264,263 1271,285"/>
-      <polygon points="1360,291 1378,248 1396,291"/>
-      <polygon points="1369,283 1378,256 1387,283"/>
+      fill="#7B9CB5" opacity=".6"/>
+    <!-- Mid green hills -->
+    <path d="M0,285 Q100,248 220,268 Q360,290 500,258 Q650,224 800,252 Q950,278 1100,245 Q1260,212 1440,240 L1440,320 L0,320 Z"
+      fill="#4A8C3F"/>
+    <!-- Ground fill -->
+    <rect x="0" y="298" width="1440" height="22" fill="#3A7A30"/>
+    <!-- Pine trees (dark green) -->
+    <g fill="#1B5E20">
+      <polygon points="40,290 52,254 64,290"/>  <polygon points="48,285 52,264 56,285"/>
+      <polygon points="90,292 106,248 122,292"/> <polygon points="100,286 106,256 112,286"/>
+      <polygon points="160,291 174,252 188,291"/> <polygon points="168,284 174,260 180,284"/>
+      <polygon points="240,290 258,240 276,290"/> <polygon points="250,283 258,250 266,283"/>
+      <polygon points="340,292 352,258 364,292"/> <polygon points="346,285 352,264 358,285"/>
+      <polygon points="440,290 456,246 472,290"/> <polygon points="448,282 456,255 464,282"/>
+      <polygon points="540,292 552,255 564,292"/> <polygon points="546,285 552,263 558,285"/>
+      <polygon points="660,290 678,244 696,290"/> <polygon points="669,283 678,252 687,283"/>
+      <polygon points="780,291 795,250 810,291"/> <polygon points="787,283 795,258 803,283"/>
+      <polygon points="900,290 916,248 932,290"/> <polygon points="908,282 916,256 924,282"/>
+      <polygon points="1010,292 1026,252 1042,292"/> <polygon points="1018,284 1026,260 1034,284"/>
+      <polygon points="1120,290 1138,246 1156,290"/> <polygon points="1129,282 1138,254 1147,282"/>
+      <polygon points="1250,292 1264,255 1278,292"/> <polygon points="1257,285 1264,263 1271,285"/>
+      <polygon points="1360,291 1378,248 1396,291"/> <polygon points="1369,283 1378,256 1387,283"/>
     </g>
-    <!-- Ground -->
-    <rect x="0" y="305" width="1440" height="15" fill="#030308"/>
+    <!-- Flowers / details on ground -->
+    <circle cx="150" cy="300" r="3" fill="#FF6B9D" opacity=".8"/>
+    <circle cx="420" cy="302" r="2.5" fill="#FFEB3B" opacity=".9"/>
+    <circle cx="700" cy="300" r="3" fill="#FF6B9D" opacity=".8"/>
+    <circle cx="950" cy="303" r="2.5" fill="#FFEB3B" opacity=".9"/>
+    <circle cx="1200" cy="301" r="3" fill="#FF6B9D" opacity=".8"/>
   </svg>
 </div>
 
@@ -1011,117 +1041,278 @@ function renderHistory() {
   }
 })();
 
-/* ─── Canvas: sparkle stars + floating Pokeballs ─────────────── */
+/* ─── Canvas: Daytime Pokemon world ─────────────────────────── */
 (function() {
   const cv = document.getElementById('starfield');
   const cx = cv.getContext('2d');
-  let stars = [], balls = [];
 
-  function resize() { cv.width = innerWidth; cv.height = innerHeight; }
-
-  function init() {
-    // Cross-shaped sparkle stars
-    stars = Array.from({length: 200}, () => ({
+  // ── Sunlight sparkles ──────────────────────────────────────
+  let sparkles = [];
+  function initSparkles() {
+    sparkles = Array.from({length: 60}, () => ({
       x: Math.random() * cv.width,
-      y: Math.random() * cv.height * .75,
-      r: Math.random() * 1.4 + .3,
+      y: Math.random() * cv.height * .72,
+      r: Math.random() * 2 + .8,
       phase: Math.random() * Math.PI * 2,
-      speed: Math.random() * .006 + .002,
-      color: Math.random() > .85 ? '#FFCB05' : Math.random() > .7 ? '#A0C0FF' : '#FFFFFF',
-    }));
-    // Floating Pokeballs (small, semi-transparent, slow drift)
-    balls = Array.from({length: 8}, () => ({
-      x: Math.random() * cv.width,
-      y: Math.random() * cv.height * .7,
-      r: 8 + Math.random() * 12,
-      vx: (Math.random() - .5) * .25,
-      vy: (Math.random() - .5) * .15,
-      opacity: .04 + Math.random() * .06,
-      phase: Math.random() * Math.PI * 2,
+      speed: Math.random() * .003 + .001,
+      color: Math.random() > .5 ? '#FFF9C4' : '#FFFFFF',
     }));
   }
 
   function drawSparkle(x, y, r, a, color) {
-    cx.save();
-    cx.globalAlpha = a;
-    cx.strokeStyle = color;
-    cx.lineWidth = r * .6;
-    cx.lineCap = 'round';
-    // Horizontal arm
+    cx.save(); cx.globalAlpha = a; cx.strokeStyle = color;
+    cx.lineWidth = r * .55; cx.lineCap = 'round';
     cx.beginPath(); cx.moveTo(x - r, y); cx.lineTo(x + r, y); cx.stroke();
-    // Vertical arm
     cx.beginPath(); cx.moveTo(x, y - r); cx.lineTo(x, y + r); cx.stroke();
-    // Diagonal arms (smaller)
-    const d = r * .5;
-    cx.lineWidth = r * .3;
+    const d = r * .45; cx.lineWidth = r * .28;
     cx.beginPath(); cx.moveTo(x - d, y - d); cx.lineTo(x + d, y + d); cx.stroke();
     cx.beginPath(); cx.moveTo(x + d, y - d); cx.lineTo(x - d, y + d); cx.stroke();
     cx.restore();
   }
 
-  function drawPokeball(x, y, r, opacity) {
-    cx.save();
-    cx.globalAlpha = opacity;
-    // Top half (red)
+  // ── Pikachu ───────────────────────────────────────────────
+  // Walks left→right near the ground, bouncing gently
+  const pika = { x: -60, y: 0, speed: .55, bounce: 0, phase: 0, scale: 1.15 };
+  function resetPika() {
+    pika.x = -70;
+    pika.y = cv.height * .76 - 34 * pika.scale;
+  }
+
+  function drawPikachu(x, y, sc, t) {
+    const s = sc;
+    cx.save(); cx.translate(x, y);
+
+    // Shadow
+    cx.globalAlpha = .18; cx.fillStyle = '#000';
+    cx.beginPath(); cx.ellipse(0, 34*s, 18*s, 5*s, 0, 0, Math.PI*2); cx.fill();
+    cx.globalAlpha = 1;
+
+    // Tail (zigzag lightning bolt)
+    cx.save(); cx.translate(16*s, 0);
+    cx.strokeStyle = '#FFD700'; cx.lineWidth = 4*s; cx.lineCap = 'round'; cx.lineJoin = 'round';
     cx.beginPath();
-    cx.arc(x, y, r, Math.PI, 0);
-    cx.fillStyle = '#CC2200';
-    cx.fill();
-    // Bottom half (white)
-    cx.beginPath();
-    cx.arc(x, y, r, 0, Math.PI);
-    cx.fillStyle = '#CCCCCC';
-    cx.fill();
-    // Border
-    cx.beginPath();
-    cx.arc(x, y, r, 0, Math.PI * 2);
-    cx.strokeStyle = '#222';
-    cx.lineWidth = r * .12;
+    cx.moveTo(0, 12*s);
+    cx.lineTo(8*s, 2*s);
+    cx.lineTo(4*s, -8*s);
+    cx.lineTo(14*s, -18*s);
+    cx.lineTo(10*s, -28*s);
     cx.stroke();
-    // Belt line
-    cx.beginPath();
-    cx.moveTo(x - r, y); cx.lineTo(x + r, y);
-    cx.strokeStyle = '#222';
-    cx.lineWidth = r * .15;
-    cx.stroke();
-    // Center button
-    cx.beginPath();
-    cx.arc(x, y, r * .22, 0, Math.PI * 2);
-    cx.fillStyle = '#CCCCCC';
-    cx.fill();
-    cx.strokeStyle = '#222';
-    cx.lineWidth = r * .1;
-    cx.stroke();
+    // Tail tip (yellow triangle)
+    cx.fillStyle = '#FFD700';
+    cx.beginPath(); cx.moveTo(6*s, -26*s); cx.lineTo(14*s, -34*s); cx.lineTo(16*s, -22*s); cx.closePath(); cx.fill();
     cx.restore();
+
+    // Body
+    cx.fillStyle = '#FFD600';
+    cx.beginPath(); cx.ellipse(0, 18*s, 16*s, 18*s, 0, 0, Math.PI*2); cx.fill();
+
+    // Ears (pointed, black tips)
+    // Left ear
+    cx.fillStyle = '#FFD600';
+    cx.beginPath(); cx.moveTo(-10*s, 2*s); cx.lineTo(-16*s, -22*s); cx.lineTo(-4*s, -2*s); cx.closePath(); cx.fill();
+    cx.fillStyle = '#222';
+    cx.beginPath(); cx.moveTo(-10*s, 2*s); cx.lineTo(-16*s, -22*s); cx.lineTo(-12*s, -6*s); cx.closePath(); cx.fill();
+    // Right ear
+    cx.fillStyle = '#FFD600';
+    cx.beginPath(); cx.moveTo(10*s, 2*s); cx.lineTo(16*s, -22*s); cx.lineTo(4*s, -2*s); cx.closePath(); cx.fill();
+    cx.fillStyle = '#222';
+    cx.beginPath(); cx.moveTo(10*s, 2*s); cx.lineTo(16*s, -22*s); cx.lineTo(12*s, -6*s); cx.closePath(); cx.fill();
+
+    // Head
+    cx.fillStyle = '#FFD600';
+    cx.beginPath(); cx.arc(0, 2*s, 14*s, 0, Math.PI*2); cx.fill();
+
+    // Red cheeks
+    cx.fillStyle = '#E53935'; cx.globalAlpha = .85;
+    cx.beginPath(); cx.ellipse(-10*s, 8*s, 5*s, 4*s, 0, 0, Math.PI*2); cx.fill();
+    cx.beginPath(); cx.ellipse(10*s, 8*s, 5*s, 4*s, 0, 0, Math.PI*2); cx.fill();
+    cx.globalAlpha = 1;
+
+    // Eyes
+    cx.fillStyle = '#222';
+    cx.beginPath(); cx.ellipse(-5*s, 1*s, 2.2*s, 2.8*s, -.15, 0, Math.PI*2); cx.fill();
+    cx.beginPath(); cx.ellipse(5*s, 1*s, 2.2*s, 2.8*s, .15, 0, Math.PI*2); cx.fill();
+    // Eye shine
+    cx.fillStyle = '#fff';
+    cx.beginPath(); cx.arc(-4.2*s, -.2*s, .9*s, 0, Math.PI*2); cx.fill();
+    cx.beginPath(); cx.arc(5.8*s, -.2*s, .9*s, 0, Math.PI*2); cx.fill();
+
+    // Mouth (happy)
+    cx.strokeStyle = '#B71C1C'; cx.lineWidth = 1.4*s; cx.lineCap = 'round';
+    cx.beginPath(); cx.arc(0, 7*s, 4*s, .15*Math.PI, .85*Math.PI); cx.stroke();
+
+    // Legs (two little stubs, alternating)
+    const legSwing = Math.sin(t * .045) * 4 * s;
+    cx.fillStyle = '#FFD600';
+    cx.beginPath(); cx.ellipse(-5*s + legSwing, 33*s, 4*s, 6*s, 0, 0, Math.PI*2); cx.fill();
+    cx.beginPath(); cx.ellipse(5*s - legSwing, 33*s, 4*s, 6*s, 0, 0, Math.PI*2); cx.fill();
+
+    cx.restore();
+  }
+
+  // ── Jigglypuff ────────────────────────────────────────────
+  // Floats in mid-sky, bobs up and down
+  const jiggly = { x: 0, baseY: 0, phase: Math.random() * Math.PI * 2, scale: .95 };
+  function resetJiggly() {
+    jiggly.x = cv.width * .6 + Math.random() * cv.width * .15;
+    jiggly.baseY = cv.height * .28 + Math.random() * cv.height * .08;
+  }
+
+  function drawJigglypuff(x, y, sc) {
+    const s = sc;
+    cx.save(); cx.translate(x, y);
+
+    // Body (pink circle)
+    cx.fillStyle = '#F8BBD9';
+    cx.beginPath(); cx.arc(0, 0, 22*s, 0, Math.PI*2); cx.fill();
+    cx.strokeStyle = '#E91E96'; cx.lineWidth = 1.5*s;
+    cx.beginPath(); cx.arc(0, 0, 22*s, 0, Math.PI*2); cx.stroke();
+
+    // Little ears/nubs on top
+    cx.fillStyle = '#F8BBD9';
+    cx.beginPath(); cx.arc(-14*s, -18*s, 6*s, 0, Math.PI*2); cx.fill();
+    cx.beginPath(); cx.arc(14*s, -18*s, 6*s, 0, Math.PI*2); cx.fill();
+    cx.strokeStyle = '#E91E96'; cx.lineWidth = 1.2*s;
+    cx.beginPath(); cx.arc(-14*s, -18*s, 6*s, 0, Math.PI*2); cx.stroke();
+    cx.beginPath(); cx.arc(14*s, -18*s, 6*s, 0, Math.PI*2); cx.stroke();
+    // Inner ear pink
+    cx.fillStyle = '#F48FB1';
+    cx.beginPath(); cx.arc(-14*s, -18*s, 3*s, 0, Math.PI*2); cx.fill();
+    cx.beginPath(); cx.arc(14*s, -18*s, 3*s, 0, Math.PI*2); cx.fill();
+
+    // Curl on forehead
+    cx.strokeStyle = '#E91E96'; cx.lineWidth = 2.2*s; cx.lineCap = 'round';
+    cx.beginPath(); cx.arc(-2*s, -20*s, 5*s, Math.PI*.9, Math.PI*2.2); cx.stroke();
+
+    // Big blue eyes
+    cx.fillStyle = '#1565C0';
+    cx.beginPath(); cx.ellipse(-8*s, -4*s, 7*s, 8*s, 0, 0, Math.PI*2); cx.fill();
+    cx.beginPath(); cx.ellipse(8*s, -4*s, 7*s, 8*s, 0, 0, Math.PI*2); cx.fill();
+    // Eye shine
+    cx.fillStyle = '#fff';
+    cx.beginPath(); cx.arc(-6*s, -6*s, 2.5*s, 0, Math.PI*2); cx.fill();
+    cx.beginPath(); cx.arc(10*s, -6*s, 2.5*s, 0, Math.PI*2); cx.fill();
+    // Pupil
+    cx.fillStyle = '#0D47A1';
+    cx.beginPath(); cx.ellipse(-8*s, -3*s, 4*s, 5*s, 0, 0, Math.PI*2); cx.fill();
+    cx.beginPath(); cx.ellipse(8*s, -3*s, 4*s, 5*s, 0, 0, Math.PI*2); cx.fill();
+
+    // Mouth (O shape, singing)
+    cx.fillStyle = '#C2185B';
+    cx.beginPath(); cx.ellipse(0, 8*s, 3.5*s, 2.8*s, 0, 0, Math.PI*2); cx.fill();
+
+    // Little hands
+    cx.fillStyle = '#F8BBD9';
+    cx.strokeStyle = '#E91E96'; cx.lineWidth = 1.2*s;
+    cx.beginPath(); cx.arc(-24*s, 6*s, 5*s, 0, Math.PI*2); cx.fill(); cx.stroke();
+    cx.beginPath(); cx.arc(24*s, 6*s, 5*s, 0, Math.PI*2); cx.fill(); cx.stroke();
+
+    // Music notes floating out
+    cx.fillStyle = '#E91E96'; cx.font = `${10*s}px serif`; cx.globalAlpha = .7;
+    cx.fillText('♪', 26*s, -10*s);
+    cx.font = `${8*s}px serif`;
+    cx.fillText('♫', 30*s, -22*s);
+    cx.globalAlpha = 1;
+
+    cx.restore();
+  }
+
+  // ── Pidgey flock ──────────────────────────────────────────
+  let pidgeys = [];
+  function initPidgeys() {
+    pidgeys = Array.from({length: 5}, (_, i) => ({
+      x: -40 - i * 55,
+      y: cv.height * (.08 + Math.random() * .12),
+      speed: .7 + Math.random() * .4,
+      wingPhase: Math.random() * Math.PI * 2,
+      scale: .55 + Math.random() * .25,
+    }));
+  }
+
+  function drawPidgey(x, y, sc, t, wingPhase) {
+    const s = sc;
+    const wing = Math.sin(t * .06 + wingPhase) * 6 * s;
+    cx.save(); cx.translate(x, y);
+
+    // Body
+    cx.fillStyle = '#A1887F';
+    cx.beginPath(); cx.ellipse(0, 0, 9*s, 6*s, -.15, 0, Math.PI*2); cx.fill();
+
+    // Wings
+    cx.fillStyle = '#8D6E63';
+    // Left wing
+    cx.beginPath();
+    cx.moveTo(-2*s, -1*s);
+    cx.quadraticCurveTo(-14*s, -4*s + wing, -18*s, 3*s + wing*.5);
+    cx.quadraticCurveTo(-10*s, 2*s, -2*s, 2*s);
+    cx.closePath(); cx.fill();
+    // Right wing
+    cx.beginPath();
+    cx.moveTo(2*s, -1*s);
+    cx.quadraticCurveTo(14*s, -4*s + wing, 18*s, 3*s + wing*.5);
+    cx.quadraticCurveTo(10*s, 2*s, 2*s, 2*s);
+    cx.closePath(); cx.fill();
+
+    // Head
+    cx.fillStyle = '#BCAAA4';
+    cx.beginPath(); cx.arc(-7*s, -3*s, 5*s, 0, Math.PI*2); cx.fill();
+
+    // Beak
+    cx.fillStyle = '#FFA726';
+    cx.beginPath(); cx.moveTo(-12*s, -3*s); cx.lineTo(-15*s, -4*s); cx.lineTo(-14*s, -1.5*s); cx.closePath(); cx.fill();
+
+    // Eye
+    cx.fillStyle = '#222';
+    cx.beginPath(); cx.arc(-8*s, -4.5*s, 1.2*s, 0, Math.PI*2); cx.fill();
+
+    // Tail
+    cx.fillStyle = '#8D6E63';
+    cx.beginPath(); cx.moveTo(8*s, 1*s); cx.lineTo(16*s, 4*s); cx.lineTo(14*s, -2*s); cx.closePath(); cx.fill();
+
+    cx.restore();
+  }
+
+  function resize() { cv.width = innerWidth; cv.height = innerHeight; }
+
+  function init() {
+    initSparkles();
+    resetPika();
+    resetJiggly();
+    initPidgeys();
   }
 
   function draw(t) {
     cx.clearRect(0, 0, cv.width, cv.height);
 
-    // Sparkle stars
-    stars.forEach(s => {
-      const a = .1 + .9 * Math.abs(Math.sin(s.phase + t * s.speed));
-      if (a > .5) {
-        drawSparkle(s.x, s.y, s.r * .8, a, s.color);
-      } else {
-        cx.globalAlpha = a;
-        cx.fillStyle = s.color;
-        cx.beginPath();
-        cx.arc(s.x, s.y, s.r * .4, 0, Math.PI * 2);
-        cx.fill();
+    // ── Sunlight sparkles ──
+    sparkles.forEach(s => {
+      const a = .08 + .45 * Math.abs(Math.sin(s.phase + t * s.speed));
+      if (a > .28) drawSparkle(s.x, s.y, s.r, a, s.color);
+      else {
+        cx.globalAlpha = a; cx.fillStyle = s.color;
+        cx.beginPath(); cx.arc(s.x, s.y, s.r * .35, 0, Math.PI*2); cx.fill();
         cx.globalAlpha = 1;
       }
     });
 
-    // Floating Pokeballs
-    balls.forEach(b => {
-      b.x += b.vx; b.y += b.vy;
-      if (b.x < -b.r * 2) b.x = cv.width + b.r;
-      if (b.x > cv.width + b.r * 2) b.x = -b.r;
-      if (b.y < -b.r * 2) b.y = cv.height * .75;
-      if (b.y > cv.height * .75) b.y = -b.r;
-      const pulse = b.opacity * (.7 + .3 * Math.sin(b.phase + t * .003));
-      drawPokeball(b.x, b.y, b.r, pulse);
+    // ── Pikachu walk ──
+    pika.x += pika.speed;
+    const bounce = Math.abs(Math.sin(t * .045)) * 5;
+    drawPikachu(pika.x, pika.y - bounce, pika.scale, t);
+    if (pika.x > cv.width + 80) resetPika();
+
+    // ── Jigglypuff float ──
+    const floatY = jiggly.baseY + Math.sin(t * .018 + jiggly.phase) * 12;
+    drawJigglypuff(jiggly.x, floatY, jiggly.scale);
+
+    // ── Pidgey flock ──
+    pidgeys.forEach(p => {
+      p.x += p.speed;
+      if (p.x > cv.width + 30) {
+        p.x = -40 - Math.random() * 60;
+        p.y = cv.height * (.06 + Math.random() * .14);
+      }
+      drawPidgey(p.x, p.y, p.scale, t, p.wingPhase);
     });
 
     requestAnimationFrame(draw);
