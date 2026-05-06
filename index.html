@@ -275,6 +275,19 @@
     .shiny-label { color: var(--pk-shiny); }
     .regular-label { color: var(--pk-hp-green); }
 
+    .stakes-banner {
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+      margin: 14px auto 0; max-width: 680px;
+      background: rgba(255,203,5,.08);
+      border: 2px solid rgba(255,203,5,.35);
+      outline: 1px solid rgba(255,203,5,.15);
+      border-radius: 4px; padding: 11px 20px;
+      font-size: 0.78rem; line-height: 1.6; text-align: center;
+      color: #fff;
+    }
+    .stakes-banner i { color: var(--pk-yellow); font-size: 1.1rem; flex-shrink: 0; }
+    .stakes-banner strong { color: var(--pk-yellow); font-family: 'Press Start 2P', monospace; font-size: 0.52rem; }
+
     /* ── Battle arena ────────────────────────────────────────── */
     .battle-arena {
       position: relative; overflow: hidden;
@@ -791,6 +804,13 @@
       </div>
 
     </div>
+  </div>
+
+  <!-- Stakes -->
+  <div class="stakes-banner">
+    <i class="fas fa-dumbbell"></i>
+    <span>Each manager does <strong>as many push-ups as their team earns points</strong> — Norma & Pablo are on the line every CSAT! 💪</span>
+    <i class="fas fa-dumbbell"></i>
   </div>
 
   <!-- Team Norma Trainers -->
@@ -1367,29 +1387,21 @@ function renderHistory() {
     if (togi.dir === -1 && togi.x < -60) resetTogi();
 
     // ── Jigglypuff float + cursor flee ──
-    const jRadius = 22 * jiggly.scale;
     const dx = jiggly.x - mouseX, dy = jiggly.y - mouseY;
     const dist = Math.sqrt(dx*dx + dy*dy);
     const fleeZone = 110;
-    if (dist < fleeZone) {
-      // Flee: push away from cursor with force proportional to closeness
+    if (dist < fleeZone && dist > 0) {
       const force = (fleeZone - dist) / fleeZone * 5.5;
       jiggly.vx += (dx / dist) * force;
       jiggly.vy += (dy / dist) * force;
       jiggly.scared = true;
-    } else {
-      jiggly.scared = false;
-    }
-    // Drift back to center-ish area gently
+    } else { jiggly.scared = false; }
     const targetX = cv.width * .65, targetY = cv.height * .3;
     jiggly.vx += (targetX - jiggly.x) * .004;
     jiggly.vy += (targetY - jiggly.y) * .004;
-    // Friction
     jiggly.vx *= .88; jiggly.vy *= .88;
-    // Natural bob when calm
     if (!jiggly.scared) jiggly.vy += Math.sin(t * .045 + jiggly.phase) * .18;
     jiggly.x += jiggly.vx; jiggly.y += jiggly.vy;
-    // Keep within sky bounds
     jiggly.x = Math.max(30, Math.min(cv.width - 30, jiggly.x));
     jiggly.y = Math.max(30, Math.min(cv.height * .72, jiggly.y));
     drawJigglypuff(jiggly.x, jiggly.y, jiggly.scale);
