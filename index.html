@@ -107,10 +107,12 @@
     }
 
     /* Grass blades */
+    #pika-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 2; }
+
     .grass-layer {
       position: fixed; bottom: 0; left: 0;
       width: 100vw; height: 40px;
-      pointer-events: none; z-index: 2;
+      pointer-events: none; z-index: 3;
       display: flex; align-items: flex-end;
       overflow: hidden;
     }
@@ -130,7 +132,7 @@
 
     /* ── Layout ──────────────────────────────────────────────── */
     .page {
-      position: relative; z-index: 3;
+      position: relative; z-index: 4;
       max-width: 1100px; margin: 0 auto;
       padding: 0 24px 120px;
     }
@@ -698,6 +700,7 @@
 
 <!-- Tall grass strip -->
 <div class="grass-layer" id="grass-layer"></div>
+<canvas id="pika-canvas"></canvas>
 
 <div id="toast"><i class="fas fa-star"></i> Board updated!</div>
 
@@ -1043,8 +1046,12 @@ function renderHistory() {
 
 /* ─── Canvas: Daytime Pokemon world ─────────────────────────── */
 (function() {
+  // Starfield canvas: Jigglypuff + Pidgeys (z-index 0, behind mountains)
   const cv = document.getElementById('starfield');
   const cx = cv.getContext('2d');
+  // Pikachu canvas: z-index 2, in front of mountains
+  const pkCv = document.getElementById('pika-canvas');
+  const pkCx = pkCv.getContext('2d');
 
 
   // ── Pikachu ───────────────────────────────────────────────
@@ -1052,79 +1059,71 @@ function renderHistory() {
   const pika = { x: -60, y: 0, speed: .55, bounce: 0, phase: 0, scale: 1.15 };
   function resetPika() {
     pika.x = -70;
-    pika.y = cv.height * .76 - 34 * pika.scale;
+    pika.y = pkCv.height * .76 - 34 * pika.scale;
   }
 
   function drawPikachu(x, y, sc, t) {
-    const s = sc;
-    cx.save(); cx.translate(x, y);
+    const s = sc; const p = pkCx;
+    p.save(); p.translate(x, y);
 
     // Shadow
-    cx.globalAlpha = .18; cx.fillStyle = '#000';
-    cx.beginPath(); cx.ellipse(0, 34*s, 18*s, 5*s, 0, 0, Math.PI*2); cx.fill();
-    cx.globalAlpha = 1;
+    p.globalAlpha = .18; p.fillStyle = '#000';
+    p.beginPath(); p.ellipse(0, 34*s, 18*s, 5*s, 0, 0, Math.PI*2); p.fill();
+    p.globalAlpha = 1;
 
     // Tail (zigzag lightning bolt)
-    cx.save(); cx.translate(16*s, 0);
-    cx.strokeStyle = '#FFD700'; cx.lineWidth = 4*s; cx.lineCap = 'round'; cx.lineJoin = 'round';
-    cx.beginPath();
-    cx.moveTo(0, 12*s);
-    cx.lineTo(8*s, 2*s);
-    cx.lineTo(4*s, -8*s);
-    cx.lineTo(14*s, -18*s);
-    cx.lineTo(10*s, -28*s);
-    cx.stroke();
-    // Tail tip (yellow triangle)
-    cx.fillStyle = '#FFD700';
-    cx.beginPath(); cx.moveTo(6*s, -26*s); cx.lineTo(14*s, -34*s); cx.lineTo(16*s, -22*s); cx.closePath(); cx.fill();
-    cx.restore();
+    p.save(); p.translate(16*s, 0);
+    p.strokeStyle = '#FFD700'; p.lineWidth = 4*s; p.lineCap = 'round'; p.lineJoin = 'round';
+    p.beginPath();
+    p.moveTo(0, 12*s); p.lineTo(8*s, 2*s); p.lineTo(4*s, -8*s);
+    p.lineTo(14*s, -18*s); p.lineTo(10*s, -28*s); p.stroke();
+    p.fillStyle = '#FFD700';
+    p.beginPath(); p.moveTo(6*s, -26*s); p.lineTo(14*s, -34*s); p.lineTo(16*s, -22*s); p.closePath(); p.fill();
+    p.restore();
 
     // Body
-    cx.fillStyle = '#FFD600';
-    cx.beginPath(); cx.ellipse(0, 18*s, 16*s, 18*s, 0, 0, Math.PI*2); cx.fill();
+    p.fillStyle = '#FFD600';
+    p.beginPath(); p.ellipse(0, 18*s, 16*s, 18*s, 0, 0, Math.PI*2); p.fill();
 
-    // Ears (pointed, black tips)
-    // Left ear
-    cx.fillStyle = '#FFD600';
-    cx.beginPath(); cx.moveTo(-10*s, 2*s); cx.lineTo(-16*s, -22*s); cx.lineTo(-4*s, -2*s); cx.closePath(); cx.fill();
-    cx.fillStyle = '#222';
-    cx.beginPath(); cx.moveTo(-10*s, 2*s); cx.lineTo(-16*s, -22*s); cx.lineTo(-12*s, -6*s); cx.closePath(); cx.fill();
-    // Right ear
-    cx.fillStyle = '#FFD600';
-    cx.beginPath(); cx.moveTo(10*s, 2*s); cx.lineTo(16*s, -22*s); cx.lineTo(4*s, -2*s); cx.closePath(); cx.fill();
-    cx.fillStyle = '#222';
-    cx.beginPath(); cx.moveTo(10*s, 2*s); cx.lineTo(16*s, -22*s); cx.lineTo(12*s, -6*s); cx.closePath(); cx.fill();
+    // Ears
+    p.fillStyle = '#FFD600';
+    p.beginPath(); p.moveTo(-10*s, 2*s); p.lineTo(-16*s, -22*s); p.lineTo(-4*s, -2*s); p.closePath(); p.fill();
+    p.fillStyle = '#222';
+    p.beginPath(); p.moveTo(-10*s, 2*s); p.lineTo(-16*s, -22*s); p.lineTo(-12*s, -6*s); p.closePath(); p.fill();
+    p.fillStyle = '#FFD600';
+    p.beginPath(); p.moveTo(10*s, 2*s); p.lineTo(16*s, -22*s); p.lineTo(4*s, -2*s); p.closePath(); p.fill();
+    p.fillStyle = '#222';
+    p.beginPath(); p.moveTo(10*s, 2*s); p.lineTo(16*s, -22*s); p.lineTo(12*s, -6*s); p.closePath(); p.fill();
 
     // Head
-    cx.fillStyle = '#FFD600';
-    cx.beginPath(); cx.arc(0, 2*s, 14*s, 0, Math.PI*2); cx.fill();
+    p.fillStyle = '#FFD600';
+    p.beginPath(); p.arc(0, 2*s, 14*s, 0, Math.PI*2); p.fill();
 
     // Red cheeks
-    cx.fillStyle = '#E53935'; cx.globalAlpha = .85;
-    cx.beginPath(); cx.ellipse(-10*s, 8*s, 5*s, 4*s, 0, 0, Math.PI*2); cx.fill();
-    cx.beginPath(); cx.ellipse(10*s, 8*s, 5*s, 4*s, 0, 0, Math.PI*2); cx.fill();
-    cx.globalAlpha = 1;
+    p.fillStyle = '#E53935'; p.globalAlpha = .85;
+    p.beginPath(); p.ellipse(-10*s, 8*s, 5*s, 4*s, 0, 0, Math.PI*2); p.fill();
+    p.beginPath(); p.ellipse(10*s, 8*s, 5*s, 4*s, 0, 0, Math.PI*2); p.fill();
+    p.globalAlpha = 1;
 
     // Eyes
-    cx.fillStyle = '#222';
-    cx.beginPath(); cx.ellipse(-5*s, 1*s, 2.2*s, 2.8*s, -.15, 0, Math.PI*2); cx.fill();
-    cx.beginPath(); cx.ellipse(5*s, 1*s, 2.2*s, 2.8*s, .15, 0, Math.PI*2); cx.fill();
-    // Eye shine
-    cx.fillStyle = '#fff';
-    cx.beginPath(); cx.arc(-4.2*s, -.2*s, .9*s, 0, Math.PI*2); cx.fill();
-    cx.beginPath(); cx.arc(5.8*s, -.2*s, .9*s, 0, Math.PI*2); cx.fill();
+    p.fillStyle = '#222';
+    p.beginPath(); p.ellipse(-5*s, 1*s, 2.2*s, 2.8*s, -.15, 0, Math.PI*2); p.fill();
+    p.beginPath(); p.ellipse(5*s, 1*s, 2.2*s, 2.8*s, .15, 0, Math.PI*2); p.fill();
+    p.fillStyle = '#fff';
+    p.beginPath(); p.arc(-4.2*s, -.2*s, .9*s, 0, Math.PI*2); p.fill();
+    p.beginPath(); p.arc(5.8*s, -.2*s, .9*s, 0, Math.PI*2); p.fill();
 
-    // Mouth (happy)
-    cx.strokeStyle = '#B71C1C'; cx.lineWidth = 1.4*s; cx.lineCap = 'round';
-    cx.beginPath(); cx.arc(0, 7*s, 4*s, .15*Math.PI, .85*Math.PI); cx.stroke();
+    // Mouth
+    p.strokeStyle = '#B71C1C'; p.lineWidth = 1.4*s; p.lineCap = 'round';
+    p.beginPath(); p.arc(0, 7*s, 4*s, .15*Math.PI, .85*Math.PI); p.stroke();
 
-    // Legs (two little stubs, alternating)
+    // Legs
     const legSwing = Math.sin(t * .045) * 4 * s;
-    cx.fillStyle = '#FFD600';
-    cx.beginPath(); cx.ellipse(-5*s + legSwing, 33*s, 4*s, 6*s, 0, 0, Math.PI*2); cx.fill();
-    cx.beginPath(); cx.ellipse(5*s - legSwing, 33*s, 4*s, 6*s, 0, 0, Math.PI*2); cx.fill();
+    p.fillStyle = '#FFD600';
+    p.beginPath(); p.ellipse(-5*s + legSwing, 33*s, 4*s, 6*s, 0, 0, Math.PI*2); p.fill();
+    p.beginPath(); p.ellipse(5*s - legSwing, 33*s, 4*s, 6*s, 0, 0, Math.PI*2); p.fill();
 
-    cx.restore();
+    p.restore();
   }
 
   // ── Jigglypuff ────────────────────────────────────────────
@@ -1257,7 +1256,10 @@ function renderHistory() {
     cx.restore();
   }
 
-  function resize() { cv.width = innerWidth; cv.height = innerHeight; }
+  function resize() {
+    cv.width = innerWidth; cv.height = innerHeight;
+    pkCv.width = innerWidth; pkCv.height = innerHeight;
+  }
 
   function init() {
     resetPika();
@@ -1268,11 +1270,12 @@ function renderHistory() {
   function draw(t) {
     cx.clearRect(0, 0, cv.width, cv.height);
 
-    // ── Pikachu walk ──
+    // ── Pikachu walk (own canvas, in front of mountains) ──
+    pkCx.clearRect(0, 0, pkCv.width, pkCv.height);
     pika.x += pika.speed;
     const bounce = Math.abs(Math.sin(t * .045)) * 5;
     drawPikachu(pika.x, pika.y - bounce, pika.scale, t);
-    if (pika.x > cv.width + 80) resetPika();
+    if (pika.x > pkCv.width + 80) resetPika();
 
     // ── Jigglypuff float + cursor flee ──
     const jRadius = 22 * jiggly.scale;
