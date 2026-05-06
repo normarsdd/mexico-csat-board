@@ -17,8 +17,6 @@ Scoring: **CSAT with customer comment = 2 pts** / **CSAT without comment = 1 pt*
 ### Prerequisites
 
 - `snow` CLI installed and authenticated (`norma.ruysanchez@datadoghq.com`)
-- `git` configured with access to `normarsdd/mexico-csat-board`
-- `gh` CLI with both accounts set up: `normarsdd` and `norma-ruysanchez_ddog`
 
 ### Option A — Single command (recommended)
 
