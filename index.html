@@ -11,437 +11,642 @@
     /* ── Palette ─────────────────────────────────────────────── */
     :root {
       --pk-red:        #CC0000;
-      --pk-red-dark:   #8B0000;
       --pk-yellow:     #FFCB05;
       --pk-blue:       #3B4CCA;
-      --pk-bg:         #0A0A1F;
-      --pk-surface:    #11112A;
-      --pk-card:       #181830;
-      --pk-border:     #2A2A55;
+      --pk-bg:         #060614;
+      --pk-surface:    #0E0E28;
+      --pk-card:       #13132B;
+      --pk-card-inner: #0A0A20;
+      --pk-border-out: #08082A;
+      --pk-border-in:  #2A2A6A;
       --pk-text:       #E8E8FF;
-      --pk-muted:      #6868A8;
-      --pk-green:      #4CAF50;
-      --pk-hp-green:   #52CC52;
+      --pk-muted:      #5858A8;
+      --pk-hp-green:   #50C850;
       --pk-hp-yellow:  #F8D030;
-      --pk-hp-red:     #F85888;
+      --pk-hp-red:     #F05050;
       --pk-gold:       #FFD700;
       --pk-shiny:      #F0A000;
       --fire-color:    #FF6B35;
-      --water-color:   #4FC3F7;
-      --fire-dark:     #CC4400;
-      --water-dark:    #0288D1;
+      --water-color:   #5BB8F5;
+      --fire-bg:       #1A0800;
+      --water-bg:      #001428;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: 'Segoe UI', system-ui, sans-serif;
-      background: var(--pk-bg);
+      background: linear-gradient(to bottom, #03030F 0%, #080818 30%, #060612 100%);
       color: var(--pk-text);
       min-height: 100vh;
       overflow-x: hidden;
     }
 
-    .pixel { font-family: 'Press Start 2P', monospace; }
-
-    /* ── Starfield ───────────────────────────────────────────── */
+    /* ── Fixed background layers ─────────────────────────────── */
     #starfield { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+
+    /* Moon */
+    .moon {
+      position: fixed; top: 48px; right: 80px;
+      width: 56px; height: 56px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #FFFDE7, #FFF9C4);
+      box-shadow: 0 0 20px rgba(255,253,231,.8), 0 0 60px rgba(255,253,231,.3), 0 0 100px rgba(255,253,231,.1);
+      pointer-events: none; z-index: 1;
+    }
+    .moon::before {
+      content: '';
+      position: absolute; top: 10px; left: 12px;
+      width: 10px; height: 10px; border-radius: 50%;
+      background: rgba(0,0,0,.07);
+    }
+    .moon::after {
+      content: '';
+      position: absolute; top: 24px; left: 28px;
+      width: 7px; height: 7px; border-radius: 50%;
+      background: rgba(0,0,0,.06);
+    }
+
+    /* Landscape SVG */
+    #landscape {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      pointer-events: none; z-index: 1;
+      overflow: hidden;
+    }
+
+    /* Grass blades */
+    .grass-layer {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      height: 36px; pointer-events: none; z-index: 2;
+      display: flex; align-items: flex-end; overflow: hidden;
+    }
+    .grass-blade {
+      flex-shrink: 0;
+      width: 6px;
+      background: #0A3A0A;
+      transform-origin: bottom center;
+      animation: sway linear infinite;
+      border-radius: 2px 2px 0 0;
+    }
+    @keyframes sway {
+      0%   { transform: rotate(-8deg); }
+      50%  { transform: rotate(8deg); }
+      100% { transform: rotate(-8deg); }
+    }
 
     /* ── Layout ──────────────────────────────────────────────── */
     .page {
-      position: relative; z-index: 1;
+      position: relative; z-index: 3;
       max-width: 1100px; margin: 0 auto;
-      padding: 0 24px 80px;
+      padding: 0 24px 120px;
     }
 
-    /* ── Pokeball CSS art ────────────────────────────────────── */
+    /* ── Pokemon dialog box mixin ────────────────────────────── */
+    /* Outer dark → inner accent border creates the classic double-border look */
+    .pk-box {
+      background: var(--pk-card);
+      border: 4px solid var(--pk-border-out);
+      outline: 2px solid var(--pk-border-in);
+      outline-offset: -6px;
+      border-radius: 6px;
+    }
+
+    /* ── Pokeball CSS ────────────────────────────────────────── */
     .pokeball-wrap {
       display: flex; justify-content: center;
-      margin-bottom: 12px;
-      animation: bounce 1.8s ease-in-out infinite;
+      margin-bottom: 14px;
+      animation: bounce 2s ease-in-out infinite;
     }
     @keyframes bounce {
-      0%,100% { transform: translateY(0); }
-      50%      { transform: translateY(-10px); }
+      0%,100% { transform: translateY(0) rotate(0deg); }
+      25%      { transform: translateY(-12px) rotate(-10deg); }
+      75%      { transform: translateY(-12px) rotate(10deg); }
     }
     .pokeball {
-      width: 72px; height: 72px; border-radius: 50%;
-      background: linear-gradient(to bottom, var(--pk-red) 50%, white 50%);
-      border: 4px solid #111; position: relative;
-      box-shadow: 0 0 30px rgba(204,0,0,.5), 0 0 60px rgba(204,0,0,.2);
+      width: 76px; height: 76px; border-radius: 50%;
+      background: linear-gradient(to bottom, #CC0000 50%, #EEEEEE 50%);
+      border: 4px solid #111;
+      position: relative;
+      box-shadow: 0 0 24px rgba(204,0,0,.7), 0 0 60px rgba(204,0,0,.3), inset 0 2px 4px rgba(255,255,255,.3);
     }
     .pokeball::before {
       content: '';
       position: absolute; top: 50%; left: 50%;
       transform: translate(-50%, -50%);
-      width: 18px; height: 18px;
-      background: white; border-radius: 50%;
-      border: 4px solid #111;
-      z-index: 2;
+      width: 20px; height: 20px;
+      background: #EEEEEE; border-radius: 50%;
+      border: 4px solid #111; z-index: 2;
+      box-shadow: 0 0 0 2px #EEEEEE;
     }
     .pokeball::after {
       content: '';
-      position: absolute; top: calc(50% - 3px); left: -4px; right: -4px;
-      height: 6px; background: #111;
-      z-index: 1;
+      position: absolute; top: calc(50% - 4px); left: -4px; right: -4px;
+      height: 8px; background: #111; z-index: 1;
     }
 
     /* ── Header ──────────────────────────────────────────────── */
-    header { text-align: center; padding: 44px 0 24px; }
+    header { text-align: center; padding: 44px 0 20px; }
 
     .wordmark-row {
       display: flex; align-items: center; justify-content: center;
-      gap: 10px; margin-bottom: 20px;
+      gap: 10px; margin-bottom: 22px;
     }
-    .wordmark-row svg { width: 32px; height: 32px; opacity: .7; }
+    .wordmark-row svg { width: 30px; height: 30px; opacity: .6; }
     .wordmark {
       font-family: 'Press Start 2P', monospace;
-      font-size: 0.65rem; letter-spacing: 3px;
+      font-size: 0.6rem; letter-spacing: 3px;
       text-transform: uppercase; color: var(--pk-muted);
     }
 
     h1 {
       font-family: 'Press Start 2P', monospace;
-      font-size: clamp(1rem, 3.5vw, 1.8rem);
+      font-size: clamp(1rem, 3.5vw, 1.9rem);
       line-height: 1.4;
-      background: linear-gradient(135deg, var(--pk-yellow) 0%, #FF6B35 50%, var(--pk-yellow) 100%);
+      background: linear-gradient(135deg, var(--pk-yellow) 0%, #FF8C00 40%, var(--pk-yellow) 80%);
       background-size: 200% auto;
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       background-clip: text;
       animation: shimmer 3s linear infinite;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
+      text-shadow: none;
+      filter: drop-shadow(0 0 20px rgba(255,203,5,.4));
     }
     @keyframes shimmer { to { background-position: 200% center; } }
 
     .tagline {
       font-family: 'Press Start 2P', monospace;
-      font-size: 0.52rem; color: var(--pk-yellow);
-      letter-spacing: 3px; text-transform: uppercase;
-      margin-bottom: 8px;
+      font-size: 0.5rem; color: var(--pk-yellow);
+      letter-spacing: 4px; text-transform: uppercase;
+      margin-bottom: 10px; opacity: .8;
     }
-
-    .subtitle { color: var(--pk-muted); font-size: 0.88rem; margin-top: 6px; }
+    .subtitle { color: var(--pk-muted); font-size: 0.86rem; margin-top: 6px; }
     .subtitle strong { color: var(--pk-yellow); }
 
+    /* Status pill — Pokemon game save/load style */
     .status-pill {
       display: inline-flex; align-items: center; gap: 8px;
-      margin-top: 16px; background: var(--pk-card);
-      border: 1px solid var(--pk-border); border-radius: 999px;
-      padding: 5px 16px; font-size: 0.78rem; color: var(--pk-muted);
+      margin-top: 16px;
+      background: var(--pk-card);
+      border: 3px solid var(--pk-border-out);
+      outline: 1px solid var(--pk-border-in);
+      border-radius: 4px;
+      padding: 6px 18px; font-size: 0.76rem; color: var(--pk-muted);
     }
-    .dot { width: 7px; height: 7px; border-radius: 50%;
+    .dot { width: 8px; height: 8px; border-radius: 50%;
       background: var(--pk-hp-green); box-shadow: 0 0 8px var(--pk-hp-green);
-      animation: blink 1.5s ease-in-out infinite;
+      animation: blink 1.2s step-end infinite;
     }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
-    /* ── Section header ──────────────────────────────────────── */
+    /* ── Section header — Pokemon menu cursor style ───────────── */
     .section-hd {
       font-family: 'Press Start 2P', monospace;
-      font-size: 0.58rem; text-transform: uppercase; letter-spacing: 2px;
-      color: var(--pk-yellow); margin: 44px 0 18px;
-      display: flex; align-items: center; gap: 12px;
+      font-size: 0.56rem; text-transform: uppercase; letter-spacing: 2px;
+      color: var(--pk-yellow); margin: 44px 0 16px;
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px;
+      background: linear-gradient(90deg, rgba(255,203,5,.08) 0%, transparent 60%);
+      border-left: 3px solid var(--pk-yellow);
+      position: relative;
     }
-    .section-hd::after { content:''; flex:1; height:2px; background: linear-gradient(to right, var(--pk-border), transparent); }
+    .section-hd .cursor {
+      display: inline-block;
+      animation: cursor-blink 0.8s step-end infinite;
+    }
+    @keyframes cursor-blink { 0%,100%{opacity:1} 50%{opacity:0} }
+    .section-hd::after {
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(to right, rgba(255,203,5,.3), transparent);
+    }
 
     /* ── Scoring legend ──────────────────────────────────────── */
     .legend {
       display: flex; gap: 10px; justify-content: center;
-      flex-wrap: wrap; margin-top: 18px;
+      flex-wrap: wrap; margin-top: 20px;
     }
     .legend-chip {
       display: flex; align-items: center; gap: 8px;
-      background: var(--pk-card); border: 2px solid var(--pk-border);
-      border-radius: 10px; padding: 10px 16px; font-size: 0.8rem;
+      background: var(--pk-card);
+      border: 3px solid var(--pk-border-out);
+      outline: 1px solid var(--pk-border-in);
+      border-radius: 4px; padding: 10px 16px; font-size: 0.8rem;
     }
-    .legend-chip i { font-size: 1.1rem; }
+    .legend-chip i { font-size: 1rem; }
     .legend-chip .pts {
       font-family: 'Press Start 2P', monospace;
-      font-size: 0.65rem; color: var(--pk-yellow);
+      font-size: 0.6rem; color: var(--pk-yellow);
     }
     .shiny-label { color: var(--pk-shiny); }
     .regular-label { color: var(--pk-hp-green); }
 
-    /* ── Battle screen ───────────────────────────────────────── */
+    /* ── Battle arena ────────────────────────────────────────── */
     .battle-arena {
-      background: var(--pk-surface);
-      border: 2px solid var(--pk-border);
-      border-radius: 20px;
-      padding: 28px;
-      position: relative;
-      overflow: hidden;
+      position: relative; overflow: hidden;
+      border: 4px solid var(--pk-border-out);
+      outline: 2px solid var(--pk-border-in);
+      border-radius: 6px;
     }
-    .battle-arena::before {
-      content: '';
+    /* Split background — fire/water like actual battle field */
+    .battle-arena-bg {
       position: absolute; inset: 0;
-      background: radial-gradient(ellipse at center, rgba(255,203,5,.04) 0%, transparent 70%);
-      pointer-events: none;
+      background: linear-gradient(90deg,
+        #1A0C00 0%, #2A1400 35%,
+        #0A0A1A 45%, #0A0A1A 55%,
+        #001428 65%, #001A30 100%);
+      z-index: 0;
     }
-
+    /* Ground line */
+    .battle-arena-bg::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0; height: 48px;
+      background: linear-gradient(90deg, #120800 0%, #0C0C20 50%, #001018 100%);
+      border-top: 2px solid rgba(255,255,255,.05);
+    }
     .battle-grid {
+      position: relative; z-index: 1;
       display: grid;
       grid-template-columns: 1fr auto 1fr;
-      gap: 20px;
-      align-items: center;
+      gap: 16px; align-items: center;
+      padding: 28px 24px;
     }
     @media(max-width:640px) { .battle-grid { grid-template-columns: 1fr; } }
 
-    /* Trainer card */
+    /* Pokemon-style HP stat box */
     .trainer-card {
-      border-radius: 16px; padding: 24px 20px;
-      text-align: center; position: relative; overflow: hidden;
-      border: 2px solid;
+      border-radius: 4px; padding: 20px 18px;
+      text-align: center; position: relative;
+      border: 3px solid;
       transition: transform .2s;
     }
     .trainer-card:hover { transform: translateY(-4px); }
     .trainer-card.fire {
-      background: linear-gradient(145deg, #1A0A00, #2A1200);
+      background: linear-gradient(160deg, #1E0C00, #2A1200);
       border-color: var(--fire-color);
-      box-shadow: 0 0 40px rgba(255,107,53,.2);
+      box-shadow: 0 0 30px rgba(255,107,53,.25), inset 0 1px 0 rgba(255,150,80,.15);
     }
     .trainer-card.water {
-      background: linear-gradient(145deg, #001020, #001830);
+      background: linear-gradient(160deg, #001428, #001E38);
       border-color: var(--water-color);
-      box-shadow: 0 0 40px rgba(79,195,247,.15);
+      box-shadow: 0 0 30px rgba(91,184,245,.2), inset 0 1px 0 rgba(91,184,245,.15);
     }
 
-    .trainer-card .type-badge {
+    /* Pokemon type pill — accurate to games */
+    .type-badge {
       display: inline-flex; align-items: center; gap: 5px;
-      padding: 3px 10px; border-radius: 999px;
-      font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+      padding: 3px 12px; border-radius: 999px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.42rem; text-transform: uppercase;
       letter-spacing: 1px; margin-bottom: 14px;
+      border: 1px solid;
     }
-    .type-badge.fire { background: rgba(255,107,53,.2); color: var(--fire-color); border: 1px solid var(--fire-color); }
-    .type-badge.water { background: rgba(79,195,247,.15); color: var(--water-color); border: 1px solid var(--water-color); }
+    .type-badge.fire {
+      background: rgba(240,80,0,.25); color: #FF9040;
+      border-color: rgba(240,80,0,.5);
+      text-shadow: 0 0 10px rgba(255,100,0,.5);
+    }
+    .type-badge.water {
+      background: rgba(60,150,255,.2); color: #80C8FF;
+      border-color: rgba(60,150,255,.4);
+      text-shadow: 0 0 10px rgba(60,150,255,.5);
+    }
 
-    .trainer-icon {
-      font-size: 2.8rem; margin-bottom: 10px;
-    }
+    .trainer-icon { font-size: 2.8rem; margin-bottom: 10px; }
     .trainer-name {
       font-family: 'Press Start 2P', monospace;
-      font-size: 0.62rem; margin-bottom: 4px; line-height: 1.6;
+      font-size: 0.58rem; margin-bottom: 4px; line-height: 1.6;
     }
-    .trainer-sub { font-size: 0.75rem; color: var(--pk-muted); margin-bottom: 14px; }
+    .trainer-sub { font-size: 0.72rem; color: var(--pk-muted); margin-bottom: 14px; }
 
-    /* HP bar */
-    .hp-row {
-      display: flex; align-items: center; gap: 8px;
-      margin-bottom: 6px;
-    }
+    /* Pokemon-accurate HP bar */
+    .hp-block { margin-top: 14px; }
+    .hp-row { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; }
     .hp-label {
       font-family: 'Press Start 2P', monospace;
-      font-size: 0.48rem; color: var(--pk-muted); flex-shrink: 0;
+      font-size: 0.42rem; color: var(--pk-muted); flex-shrink: 0;
     }
     .hp-track {
-      flex: 1; height: 10px;
-      background: rgba(255,255,255,.08);
-      border-radius: 999px; overflow: hidden;
-      border: 1px solid rgba(255,255,255,.1);
+      flex: 1; height: 8px;
+      background: #0A0A1A;
+      border: 2px solid #1A1A3A;
+      border-radius: 1px; overflow: hidden;
     }
     .hp-fill {
-      height: 100%; border-radius: 999px;
-      transition: width 1.2s cubic-bezier(.34,1.56,.64,1);
+      height: 100%;
+      transition: width 1.4s cubic-bezier(.4,0,.2,1);
+      border-radius: 1px;
     }
-    .hp-fill.high  { background: linear-gradient(90deg, var(--pk-hp-green), #7EFF7E); }
-    .hp-fill.mid   { background: linear-gradient(90deg, var(--pk-hp-yellow), #FFEC7E); }
-    .hp-fill.low   { background: linear-gradient(90deg, var(--pk-hp-red), #FF9EC4); }
+    .hp-fill.high   { background: linear-gradient(90deg, #28A028, #50E050); }
+    .hp-fill.mid    { background: linear-gradient(90deg, #C8A800, #F8D030); }
+    .hp-fill.low    { background: linear-gradient(90deg, #C02020, #F85050); }
 
     .team-score-big {
       font-family: 'Press Start 2P', monospace;
-      font-size: 1.6rem; line-height: 1;
+      font-size: 1.5rem; line-height: 1;
     }
     .team-score-label {
-      font-size: 0.68rem; color: var(--pk-muted);
+      font-size: 0.66rem; color: var(--pk-muted);
       text-transform: uppercase; letter-spacing: 1px; margin-top: 6px;
     }
+    .catch-stat {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 0.72rem; margin-top: 10px;
+    }
 
-    /* VS badge */
+    /* VS */
     .vs-badge {
       display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 6px;
+      align-items: center; justify-content: center; gap: 8px;
     }
     .vs-text {
       font-family: 'Press Start 2P', monospace;
-      font-size: 1.4rem; color: var(--pk-yellow);
-      text-shadow: 0 0 20px rgba(255,203,5,.7);
-      animation: pulse 1.5s ease-in-out infinite;
+      font-size: 1.3rem; color: var(--pk-yellow);
+      text-shadow: 0 0 16px rgba(255,203,5,.8), 2px 2px 0 #000;
+      animation: pulse 1.6s ease-in-out infinite;
     }
-    @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+    @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.12)} }
     .vs-pokeball-mini {
-      width: 36px; height: 36px; border-radius: 50%;
-      background: linear-gradient(to bottom, var(--pk-red) 50%, white 50%);
-      border: 2px solid #333;
-      position: relative;
+      width: 32px; height: 32px; border-radius: 50%;
+      background: linear-gradient(to bottom, #CC0000 50%, #DDD 50%);
+      border: 2px solid #111; position: relative;
     }
     .vs-pokeball-mini::before {
       content: ''; position: absolute;
       top: 50%; left: 50%;
       transform: translate(-50%, -50%);
-      width: 9px; height: 9px;
-      background: white; border-radius: 50%;
-      border: 2px solid #333; z-index: 2;
+      width: 8px; height: 8px;
+      background: #DDD; border-radius: 50%;
+      border: 2px solid #111; z-index: 2;
     }
     .vs-pokeball-mini::after {
       content: ''; position: absolute;
       top: calc(50% - 1.5px); left: -2px; right: -2px;
-      height: 3px; background: #333; z-index: 1;
+      height: 3px; background: #111; z-index: 1;
     }
 
-    /* ── Catch stats chips ───────────────────────────────────── */
-    .catch-stat {
-      display: inline-flex; align-items: center; gap: 5px;
-      font-size: 0.75rem; margin-top: 10px;
-    }
-    .catch-stat i { font-size: 0.8rem; }
-
-    /* ── Trainer section (per team) ──────────────────────────── */
+    /* ── Trainer list ────────────────────────────────────────── */
     .trainer-list {
       background: var(--pk-card);
-      border: 2px solid var(--pk-border);
-      border-radius: 16px;
+      border: 4px solid var(--pk-border-out);
+      outline: 1px solid var(--pk-border-in);
+      border-radius: 6px;
       overflow: hidden;
     }
     .trainer-list-header {
-      padding: 14px 20px;
+      padding: 12px 18px;
       display: flex; align-items: center; gap: 10px;
-      border-bottom: 2px solid var(--pk-border);
+      background: var(--pk-card-inner);
+      border-bottom: 2px solid var(--pk-border-out);
     }
-    .trainer-list-header i { font-size: 1rem; }
     .trainer-list-title {
       font-family: 'Press Start 2P', monospace;
-      font-size: 0.55rem; flex: 1; letter-spacing: 1px;
+      font-size: 0.52rem; flex: 1; letter-spacing: 1px;
     }
     .trainer-list-total {
       font-family: 'Press Start 2P', monospace;
-      font-size: 0.7rem;
+      font-size: 0.65rem;
     }
 
-    /* ── Player / Trainer row ────────────────────────────────── */
+    /* ── Trainer row ─────────────────────────────────────────── */
     .trainer-row {
-      padding: 14px 20px;
+      padding: 13px 18px;
       display: grid;
-      grid-template-columns: 32px 48px 1fr auto;
-      align-items: center; gap: 14px;
+      grid-template-columns: 30px 46px 1fr auto;
+      align-items: center; gap: 13px;
       border-bottom: 1px solid rgba(255,255,255,.04);
-      transition: background .15s;
+      transition: background .12s;
     }
     .trainer-row:last-child { border-bottom: none; }
-    .trainer-row:hover { background: rgba(255,255,255,.025); }
+    .trainer-row:hover { background: rgba(255,255,255,.02); }
 
     .rank-num {
       font-family: 'Press Start 2P', monospace;
-      font-size: 0.55rem; color: var(--pk-muted);
+      font-size: 0.52rem; color: var(--pk-muted);
       text-align: center;
     }
-
     .trainer-avatar {
-      width: 44px; height: 44px; border-radius: 50%;
+      width: 42px; height: 42px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      font-size: 0.8rem; font-weight: 700; flex-shrink: 0;
+      font-size: 0.78rem; font-weight: 700; flex-shrink: 0;
       border: 2px solid;
     }
+    .trainer-row-name { font-weight: 700; font-size: 0.88rem; margin-bottom: 4px; }
 
-    .trainer-row-name {
-      font-weight: 700; font-size: 0.9rem; margin-bottom: 3px;
-    }
-
-    /* Mini catch badges */
-    .mini-catches {
-      display: flex; gap: 5px; flex-wrap: wrap; margin-top: 4px; margin-bottom: 5px;
-    }
+    /* Catch badges */
+    .mini-catches { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 5px; }
     .mini-catch {
       display: inline-flex; align-items: center; gap: 3px;
-      padding: 2px 7px; border-radius: 6px;
-      font-size: 0.68rem; border: 1px solid;
+      padding: 2px 7px; border-radius: 3px;
+      font-size: 0.67rem; border: 1px solid;
+      font-family: 'Press Start 2P', monospace; font-size: 0.42rem;
     }
     .mini-catch.shiny {
-      background: rgba(240,160,0,.12);
-      border-color: rgba(240,160,0,.4);
+      background: rgba(240,160,0,.12); border-color: rgba(240,160,0,.4);
       color: var(--pk-shiny);
     }
     .mini-catch.regular {
-      background: rgba(76,175,80,.1);
-      border-color: rgba(76,175,80,.35);
+      background: rgba(80,200,80,.1); border-color: rgba(80,200,80,.35);
       color: var(--pk-hp-green);
     }
-    .mini-catch i { font-size: 0.65rem; }
 
-    /* Pokeball HP bar (player-level) */
+    /* Player HP bar (smaller) */
     .player-hp-wrap { margin-top: 4px; }
+    .player-hp-wrap .hp-track { height: 5px; border-width: 1px; }
 
     .score-pts {
       font-family: 'Press Start 2P', monospace;
-      font-size: 0.85rem; text-align: right;
+      font-size: 0.82rem; text-align: right;
     }
     .score-pts-label {
-      font-size: 0.62rem; color: var(--pk-muted);
+      font-size: 0.6rem; color: var(--pk-muted);
       text-align: right; margin-top: 2px;
     }
 
-    /* ── Team badge in combined leaderboard ──────────────────── */
+    /* ── Team tags ───────────────────────────────────────────── */
     .team-tag {
       display: inline-flex; align-items: center; gap: 3px;
-      font-size: 0.6rem; padding: 1px 6px; border-radius: 4px;
-      margin-left: 6px; vertical-align: middle;
-      font-weight: 700;
+      font-size: 0.58rem; padding: 1px 7px; border-radius: 3px;
+      margin-left: 6px; vertical-align: middle; font-weight: 700;
+      font-family: 'Press Start 2P', monospace; font-size: 0.38rem;
     }
-    .team-tag.fire { background: rgba(255,107,53,.15); color: var(--fire-color); border: 1px solid rgba(255,107,53,.3); }
-    .team-tag.water { background: rgba(79,195,247,.12); color: var(--water-color); border: 1px solid rgba(79,195,247,.25); }
+    .team-tag.fire  { background: rgba(255,107,53,.15); color: var(--fire-color);  border: 1px solid rgba(255,107,53,.3); }
+    .team-tag.water { background: rgba(91,184,245,.12); color: var(--water-color); border: 1px solid rgba(91,184,245,.25); }
 
-    /* ── Pokeball counter decorations ────────────────────────── */
-    .pokeball-row {
-      display: flex; gap: 4px; flex-wrap: wrap; margin-top: 2px;
+    /* ── Winner glow ─────────────────────────────────────────── */
+    .trainer-card.winner { transform: scale(1.03); }
+    .trainer-card.winner.fire  { box-shadow: 0 0 50px rgba(255,107,53,.45); }
+    .trainer-card.winner.water { box-shadow: 0 0 50px rgba(91,184,245,.4); }
+
+    /* ── History feed — Pokemon dialog style ─────────────────── */
+    .history-feed {
+      background: var(--pk-card);
+      border: 4px solid var(--pk-border-out);
+      outline: 1px solid var(--pk-border-in);
+      border-radius: 6px;
+      overflow: hidden;
     }
-    .pb-icon { font-size: 0.72rem; }
-    .pb-shiny { color: var(--pk-gold); }
-    .pb-reg   { color: var(--pk-hp-green); }
+    .history-feed-header {
+      padding: 12px 18px;
+      display: flex; align-items: center; gap: 10px;
+      background: var(--pk-card-inner);
+      border-bottom: 2px solid var(--pk-border-out);
+    }
+    .history-feed-title {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.52rem; flex: 1; letter-spacing: 1px;
+    }
+    .history-count { font-size: 0.73rem; color: var(--pk-muted); }
 
-    /* ── Info banner ─────────────────────────────────────────── */
+    /* Each history item looks like a Pokemon dialog message */
+    .history-item {
+      padding: 14px 18px;
+      display: grid;
+      grid-template-columns: 46px 1fr auto;
+      gap: 14px; align-items: flex-start;
+      border-bottom: 1px solid rgba(255,255,255,.04);
+    }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:none} }
+    .history-item:last-child { border-bottom: none; }
+    .history-item:hover { background: rgba(255,255,255,.02); }
+
+    .history-avatar {
+      width: 42px; height: 42px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.74rem; font-weight: 700; flex-shrink: 0;
+      border: 2px solid; margin-top: 2px;
+    }
+    .history-meta {
+      display: flex; align-items: center; gap: 7px;
+      flex-wrap: wrap; margin-bottom: 6px;
+    }
+    .history-name { font-weight: 700; font-size: 0.86rem; }
+    .history-date { font-size: 0.7rem; color: var(--pk-muted); }
+    .history-type-tag {
+      display: inline-flex; align-items: center; gap: 3px;
+      font-size: 0.58rem; padding: 1px 7px; border-radius: 3px; font-weight: 700;
+      font-family: 'Press Start 2P', monospace; font-size: 0.38rem;
+    }
+
+    /* Comment shown in a Pokemon speech box */
+    .history-comment {
+      background: var(--pk-card-inner);
+      border: 2px solid var(--pk-border-out);
+      outline: 1px solid;
+      border-radius: 4px;
+      padding: 10px 14px;
+      font-size: 0.82rem; line-height: 1.6;
+      font-style: italic;
+      color: var(--pk-text);
+      position: relative;
+    }
+    .history-comment::before {
+      content: '▲';
+      position: absolute; top: -12px; left: 16px;
+      font-size: 0.7rem;
+      line-height: 1;
+    }
+    .history-no-comment {
+      font-size: 0.74rem; color: var(--pk-muted);
+      display: flex; align-items: center; gap: 5px;
+      font-family: 'Press Start 2P', monospace; font-size: 0.42rem;
+    }
+
+    .history-pts {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.72rem; text-align: right;
+      white-space: nowrap; padding-top: 4px;
+    }
+    .history-pts-label { font-size: 0.58rem; color: var(--pk-muted); text-align: right; margin-top: 3px; }
+
+    /* ── Info banner — Professor Oak dialog ──────────────────── */
     .info-banner {
-      background: rgba(59,76,202,.1);
-      border: 1px solid rgba(59,76,202,.3);
-      border-radius: 12px; padding: 14px 18px; font-size: 0.8rem;
-      color: var(--pk-muted); margin-top: 16px; line-height: 1.7;
+      background: var(--pk-card);
+      border: 4px solid var(--pk-border-out);
+      outline: 1px solid var(--pk-border-in);
+      border-radius: 6px;
+      padding: 16px 20px; font-size: 0.8rem;
+      color: var(--pk-muted); margin-top: 16px; line-height: 1.8;
     }
     .info-banner code {
-      background: rgba(255,255,255,.07); border-radius: 4px;
+      background: var(--pk-card-inner); border-radius: 3px;
       padding: 1px 6px; font-size: 0.78rem; color: var(--pk-yellow);
+      border: 1px solid var(--pk-border-in);
     }
-    .info-banner i { color: var(--pk-yellow); }
 
-    /* ── Toast ───────────────────────────────────────────────── */
+    /* ── Toast — Pokemon battle notification ─────────────────── */
     #toast {
       position: fixed; bottom: 28px; left: 50%;
       transform: translateX(-50%) translateY(80px);
-      background: var(--pk-card); border: 2px solid var(--pk-yellow);
-      border-radius: 12px; padding: 12px 22px;
-      font-family: 'Press Start 2P', monospace; font-size: 0.6rem;
-      box-shadow: 0 8px 32px rgba(0,0,0,.5);
+      background: var(--pk-card);
+      border: 4px solid var(--pk-border-out);
+      outline: 2px solid var(--pk-yellow);
+      border-radius: 4px; padding: 12px 22px;
+      font-family: 'Press Start 2P', monospace; font-size: 0.58rem;
+      box-shadow: 4px 4px 0 rgba(0,0,0,.6);
       z-index: 1000; transition: transform .3s cubic-bezier(.34,1.56,.64,1);
       pointer-events: none; color: var(--pk-yellow);
     }
     #toast.show { transform: translateX(-50%) translateY(0); }
 
-    /* ── Winner glow on battle card ──────────────────────────── */
-    .trainer-card.winner {
-      transform: scale(1.03);
-    }
-    .trainer-card.winner.fire {
-      box-shadow: 0 0 60px rgba(255,107,53,.4);
-    }
-    .trainer-card.winner.water {
-      box-shadow: 0 0 60px rgba(79,195,247,.35);
-    }
-
     @media(max-width:500px) {
-      .trainer-row { grid-template-columns: 24px 38px 1fr auto; gap: 10px; }
+      .trainer-row { grid-template-columns: 24px 36px 1fr auto; gap: 10px; }
       .score-pts { font-size: 0.7rem; }
+      h1 { font-size: 0.85rem; }
     }
   </style>
 </head>
 <body>
 
+<!-- Background layers -->
 <canvas id="starfield"></canvas>
+<div class="moon"></div>
+
+<!-- Pokemon landscape: mountains → hills → trees → grass -->
+<div id="landscape">
+  <svg viewBox="0 0 1440 320" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+    <!-- Far mountains -->
+    <path d="M0,260 L60,180 L130,230 L220,150 L320,210 L430,130 L540,195 L650,115 L770,170 L890,100 L1010,160 L1130,90 L1250,145 L1380,95 L1440,125 L1440,320 L0,320 Z"
+      fill="#0A0820"/>
+    <!-- Mid hills -->
+    <path d="M0,290 Q100,260 220,278 Q360,298 500,268 Q650,236 800,262 Q950,288 1100,255 Q1260,222 1440,250 L1440,320 L0,320 Z"
+      fill="#080616"/>
+    <!-- Pine tree silhouettes -->
+    <g fill="#050510">
+      <polygon points="40,290 52,254 64,290"/>
+      <polygon points="48,285 52,264 56,285"/>
+      <polygon points="90,292 106,248 122,292"/>
+      <polygon points="100,286 106,256 112,286"/>
+      <polygon points="160,291 174,252 188,291"/>
+      <polygon points="168,284 174,260 180,284"/>
+      <polygon points="240,290 258,240 276,290"/>
+      <polygon points="250,283 258,250 266,283"/>
+      <polygon points="340,292 352,258 364,292"/>
+      <polygon points="346,285 352,264 358,285"/>
+      <polygon points="440,290 456,246 472,290"/>
+      <polygon points="448,282 456,255 464,282"/>
+      <polygon points="540,292 552,255 564,292"/>
+      <polygon points="546,285 552,263 558,285"/>
+      <polygon points="660,290 678,244 696,290"/>
+      <polygon points="669,283 678,252 687,283"/>
+      <polygon points="780,291 795,250 810,291"/>
+      <polygon points="787,283 795,258 803,283"/>
+      <polygon points="900,290 916,248 932,290"/>
+      <polygon points="908,282 916,256 924,282"/>
+      <polygon points="1010,292 1026,252 1042,292"/>
+      <polygon points="1018,284 1026,260 1034,284"/>
+      <polygon points="1120,290 1138,246 1156,290"/>
+      <polygon points="1129,282 1138,254 1147,282"/>
+      <polygon points="1250,292 1264,255 1278,292"/>
+      <polygon points="1257,285 1264,263 1271,285"/>
+      <polygon points="1360,291 1378,248 1396,291"/>
+      <polygon points="1369,283 1378,256 1387,283"/>
+    </g>
+    <!-- Ground -->
+    <rect x="0" y="305" width="1440" height="15" fill="#030308"/>
+  </svg>
+</div>
+
+<!-- Tall grass strip -->
+<div class="grass-layer" id="grass-layer"></div>
+
 <div id="toast"><i class="fas fa-star"></i> Board updated!</div>
 
 <div class="page">
@@ -460,7 +665,7 @@
     </div>
     <div class="pokeball-wrap"><div class="pokeball"></div></div>
     <h1>CSAT LEAGUE</h1>
-    <p class="tagline">Gotta catch 'em all!</p>
+    <p class="tagline">★ Gotta catch 'em all! ★</p>
     <p class="subtitle">Q2 2026 · Mexico TSE Team · Idea by <strong>Fer Ramirez</strong> 🇲🇽</p>
     <div class="status-pill">
       <span class="dot"></span>
@@ -483,46 +688,44 @@
   </div>
 
   <!-- Battle Section -->
-  <div class="section-hd"><i class="fas fa-swords"></i> Gym Battle</div>
+  <div class="section-hd"><span class="cursor">▶</span><i class="fas fa-swords"></i> Gym Battle</div>
   <div class="battle-arena">
+    <div class="battle-arena-bg"></div>
     <div class="battle-grid">
 
-      <!-- Team Norma -->
       <div class="trainer-card fire" id="norma-card">
-        <div class="type-badge fire"><i class="fas fa-fire"></i> Fire Gym</div>
+        <div class="type-badge fire"><i class="fas fa-fire"></i>&nbsp;FIRE GYM</div>
         <div class="trainer-icon">🏋️‍♀️</div>
         <div class="trainer-name" style="color:var(--fire-color)">LEADER NORMA</div>
         <div class="trainer-sub">Norma Ruy Sanchez</div>
         <div class="team-score-big" style="color:var(--fire-color)" id="norma-pts">—</div>
         <div class="team-score-label"><i class="fas fa-bolt"></i> total points</div>
-        <div class="hp-row" style="margin-top:14px">
-          <span class="hp-label">HP</span>
-          <div class="hp-track">
-            <div class="hp-fill high" id="norma-bar" style="width:0%"></div>
+        <div class="hp-block">
+          <div class="hp-row">
+            <span class="hp-label">HP</span>
+            <div class="hp-track"><div class="hp-fill high" id="norma-bar" style="width:0%"></div></div>
           </div>
         </div>
         <div class="catch-stat" id="norma-catches" style="color:var(--fire-color)"></div>
       </div>
 
-      <!-- VS -->
       <div class="vs-badge">
         <div class="vs-pokeball-mini"></div>
         <div class="vs-text">VS</div>
         <div class="vs-pokeball-mini"></div>
       </div>
 
-      <!-- Team Pablo -->
       <div class="trainer-card water" id="pablo-card">
-        <div class="type-badge water"><i class="fas fa-droplet"></i> Water Gym</div>
+        <div class="type-badge water"><i class="fas fa-droplet"></i>&nbsp;WATER GYM</div>
         <div class="trainer-icon">🧑‍💼</div>
         <div class="trainer-name" style="color:var(--water-color)">LEADER PABLO</div>
         <div class="trainer-sub">Pablo Acosta</div>
         <div class="team-score-big" style="color:var(--water-color)" id="pablo-pts">—</div>
         <div class="team-score-label"><i class="fas fa-bolt"></i> total points</div>
-        <div class="hp-row" style="margin-top:14px">
-          <span class="hp-label">HP</span>
-          <div class="hp-track">
-            <div class="hp-fill high" id="pablo-bar" style="width:0%"></div>
+        <div class="hp-block">
+          <div class="hp-row">
+            <span class="hp-label">HP</span>
+            <div class="hp-track"><div class="hp-fill high" id="pablo-bar" style="width:0%"></div></div>
           </div>
         </div>
         <div class="catch-stat" id="pablo-catches" style="color:var(--water-color)"></div>
@@ -532,23 +735,28 @@
   </div>
 
   <!-- Team Norma Trainers -->
-  <div class="section-hd"><i class="fas fa-fire" style="color:var(--fire-color)"></i> Fire Gym · Trainers</div>
+  <div class="section-hd"><span class="cursor">▶</span><i class="fas fa-fire" style="color:var(--fire-color)"></i> Fire Gym · Trainers</div>
   <div class="trainer-list" id="norma-players"></div>
 
   <!-- Team Pablo Trainers -->
-  <div class="section-hd"><i class="fas fa-droplet" style="color:var(--water-color)"></i> Water Gym · Trainers</div>
+  <div class="section-hd"><span class="cursor">▶</span><i class="fas fa-droplet" style="color:var(--water-color)"></i> Water Gym · Trainers</div>
   <div class="trainer-list" id="pablo-players"></div>
 
   <!-- Combined Leaderboard -->
-  <div class="section-hd"><i class="fas fa-ranking-star" style="color:var(--pk-yellow)"></i> Overall Pokedex Rankings</div>
+  <div class="section-hd"><span class="cursor">▶</span><i class="fas fa-ranking-star" style="color:var(--pk-yellow)"></i> Overall Pokédex Rankings</div>
   <div class="trainer-list" id="combined-board"></div>
+
+  <!-- May CSAT History -->
+  <div class="section-hd"><span class="cursor">▶</span><i class="fas fa-scroll" style="color:var(--pk-yellow)"></i> CSAT History · May 2026</div>
+  <div class="history-feed" id="csat-history"></div>
 
   <!-- Info -->
   <div class="info-banner">
-    <i class="fas fa-circle-info"></i>
-    Data is refreshed by querying Snowflake live. To update:<br>
+    <i class="fas fa-circle-info" style="color:var(--pk-yellow)"></i>
+    <strong style="color:var(--pk-yellow); font-family:'Press Start 2P',monospace; font-size:.52rem">Prof. Oak says:</strong>
+    Data is refreshed by querying Snowflake live. To update the board:<br>
     <code>bash ~/DDRepos/mexico-csat-board/update_csat_board.sh</code><br>
-    <i class="fas fa-star" style="color:var(--pk-shiny)"></i> Shiny catch (with customer comment) = <strong>2 pts</strong> &nbsp;·&nbsp;
+    <i class="fas fa-star" style="color:var(--pk-shiny)"></i> Shiny catch (CSAT with comment) = <strong>2 pts</strong> &nbsp;·&nbsp;
     <i class="fas fa-circle-check" style="color:var(--pk-hp-green)"></i> Regular catch (no comment) = <strong>1 pt</strong>
   </div>
 
@@ -567,92 +775,76 @@ const MEDALS = [
 /* ─── Load data ──────────────────────────────────────────────── */
 const data = (typeof CSAT_DATA !== 'undefined')
   ? CSAT_DATA
-  : { generatedAt: null, weekLabel: '—', teams: [], players: [] };
+  : { generatedAt: null, weekLabel: '—', teams: [], players: [], csatHistory: [] };
 
-/* ─── Week label ─────────────────────────────────────────────── */
 document.getElementById('week-label').textContent =
   (data.weekLabel || '—') + (data.generatedAt
     ? '  ·  updated ' + new Date(data.generatedAt).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
     : '  ·  not yet loaded');
 
-/* ─── HP bar color based on percentage ──────────────────────── */
 function hpClass(pct) {
   if (pct > 50) return 'high';
   if (pct > 20) return 'mid';
   return 'low';
 }
 
-/* ─── Team battle render ─────────────────────────────────────── */
+/* ─── Team battle ────────────────────────────────────────────── */
 function renderBattle() {
   const players = data.players || [];
   const normaPlayers = players.filter(p => p.team === 'norma');
   const pabloPlayers = players.filter(p => p.team === 'pablo');
-
   const normaTotal = normaPlayers.reduce((s, p) => s + p.totalPoints, 0);
   const pabloTotal = pabloPlayers.reduce((s, p) => s + p.totalPoints, 0);
   const maxTeam    = Math.max(normaTotal, pabloTotal, 1);
-
-  const normaCatchTotal  = normaPlayers.reduce((s, p) => s + p.csatWithComment + p.csatNoComment, 0);
-  const pabloCatchTotal  = pabloPlayers.reduce((s, p) => s + p.csatWithComment + p.csatNoComment, 0);
-  const normaShinyTotal  = normaPlayers.reduce((s, p) => s + p.csatWithComment, 0);
-  const pabloShinyTotal  = pabloPlayers.reduce((s, p) => s + p.csatWithComment, 0);
+  const normaShiny = normaPlayers.reduce((s, p) => s + p.csatWithComment, 0);
+  const pabloShiny = pabloPlayers.reduce((s, p) => s + p.csatWithComment, 0);
+  const normaReg   = normaPlayers.reduce((s, p) => s + p.csatNoComment, 0);
+  const pabloReg   = pabloPlayers.reduce((s, p) => s + p.csatNoComment, 0);
 
   document.getElementById('norma-pts').textContent = fmt(normaTotal);
   document.getElementById('pablo-pts').textContent = fmt(pabloTotal);
-
   document.getElementById('norma-catches').innerHTML =
-    `<i class="fas fa-star"></i>&nbsp;${normaShinyTotal} shiny &nbsp;·&nbsp; <i class="fas fa-circle-check"></i>&nbsp;${normaCatchTotal - normaShinyTotal} regular`;
+    `<i class="fas fa-star"></i>&nbsp;${normaShiny} shiny &nbsp;·&nbsp; <i class="fas fa-circle-check"></i>&nbsp;${normaReg} regular`;
   document.getElementById('pablo-catches').innerHTML =
-    `<i class="fas fa-star"></i>&nbsp;${pabloShinyTotal} shiny &nbsp;·&nbsp; <i class="fas fa-circle-check"></i>&nbsp;${pabloCatchTotal - pabloShinyTotal} regular`;
+    `<i class="fas fa-star"></i>&nbsp;${pabloShiny} shiny &nbsp;·&nbsp; <i class="fas fa-circle-check"></i>&nbsp;${pabloReg} regular`;
 
   const normaPct = (normaTotal / maxTeam * 100).toFixed(1);
   const pabloPct = (pabloTotal / maxTeam * 100).toFixed(1);
-
   setTimeout(() => {
     const nb = document.getElementById('norma-bar');
     const pb = document.getElementById('pablo-bar');
-    nb.style.width = normaPct + '%';
-    nb.className = 'hp-fill ' + hpClass(normaPct);
-    pb.style.width = pabloPct + '%';
-    pb.className = 'hp-fill ' + hpClass(pabloPct);
-  }, 100);
+    nb.style.width = normaPct + '%'; nb.className = 'hp-fill ' + hpClass(normaPct);
+    pb.style.width = pabloPct + '%'; pb.className = 'hp-fill ' + hpClass(pabloPct);
+  }, 120);
 
-  if (normaTotal > pabloTotal) {
-    document.getElementById('norma-card').classList.add('winner');
-  } else if (pabloTotal > normaTotal) {
-    document.getElementById('pablo-card').classList.add('winner');
-  }
+  if (normaTotal > pabloTotal) document.getElementById('norma-card').classList.add('winner');
+  else if (pabloTotal > normaTotal) document.getElementById('pablo-card').classList.add('winner');
 }
 
-/* ─── Single trainer row HTML ────────────────────────────────── */
+/* ─── Trainer row ────────────────────────────────────────────── */
 function trainerRowHTML(p, rank, maxPts) {
-  const color   = p.color;
-  const pct     = (p.totalPoints / Math.max(maxPts, 1) * 100).toFixed(1);
-  const rankLabel = rank <= 3
-    ? MEDALS[rank - 1]
-    : `<span style="color:var(--pk-muted)">${rank}</span>`;
-
+  const color    = p.color;
+  const pct      = (p.totalPoints / Math.max(maxPts, 1) * 100).toFixed(1);
+  const rankLabel = rank <= 3 ? MEDALS[rank - 1] : `<span style="color:var(--pk-muted)">${rank}</span>`;
   return `
     <div class="trainer-row">
       <div class="rank-num">${rankLabel}</div>
-      <div class="trainer-avatar" style="background:${color}18; color:${color}; border-color:${color}44">
-        ${p.initials}
-      </div>
+      <div class="trainer-avatar" style="background:${color}18;color:${color};border-color:${color}55">${p.initials}</div>
       <div>
         <div class="trainer-row-name">${p.name}</div>
         <div class="mini-catches">
           ${p.csatWithComment > 0
-            ? `<span class="mini-catch shiny"><i class="fas fa-star"></i> ${p.csatWithComment} shiny catch${p.csatWithComment !== 1 ? 'es' : ''}</span>`
+            ? `<span class="mini-catch shiny"><i class="fas fa-star"></i>&nbsp;${p.csatWithComment} shiny catch${p.csatWithComment !== 1 ? 'es' : ''}</span>`
             : ''}
           ${p.csatNoComment > 0
-            ? `<span class="mini-catch regular"><i class="fas fa-circle-check"></i> ${p.csatNoComment} regular catch${p.csatNoComment !== 1 ? 'es' : ''}</span>`
+            ? `<span class="mini-catch regular"><i class="fas fa-circle-check"></i>&nbsp;${p.csatNoComment} regular catch${p.csatNoComment !== 1 ? 'es' : ''}</span>`
             : ''}
           ${p.csatWithComment === 0 && p.csatNoComment === 0
-            ? `<span style="font-size:.72rem;color:var(--pk-muted)"><i class="fas fa-clock"></i> No catches yet</span>`
+            ? `<span style="font-size:.7rem;color:var(--pk-muted)"><i class="fas fa-clock"></i> No catches yet</span>`
             : ''}
         </div>
         <div class="player-hp-wrap">
-          <div class="hp-track" style="height:4px">
+          <div class="hp-track" style="height:5px">
             <div class="hp-fill ${hpClass(pct)}" style="width:${pct}%"></div>
           </div>
         </div>
@@ -664,69 +856,52 @@ function trainerRowHTML(p, rank, maxPts) {
     </div>`;
 }
 
-/* ─── Team section render ────────────────────────────────────── */
+/* ─── Team sections ──────────────────────────────────────────── */
 function renderTeamSection(containerId, teamId, teamColor, teamIcon, teamName) {
-  const players = (data.players || [])
-    .filter(p => p.team === teamId)
-    .sort((a, b) => b.totalPoints - a.totalPoints);
-
+  const players = (data.players || []).filter(p => p.team === teamId).sort((a, b) => b.totalPoints - a.totalPoints);
   const container = document.getElementById(containerId);
   const maxPts    = Math.max(...players.map(p => p.totalPoints), 1);
   const total     = players.reduce((s, p) => s + p.totalPoints, 0);
-
-  container.innerHTML = `
-    <div class="trainer-list-header">
-      <i class="${teamIcon}" style="color:${teamColor}"></i>
-      <div class="trainer-list-title" style="color:${teamColor}">${teamName}</div>
-      <div class="trainer-list-total" style="color:${teamColor}">${fmt(total)} pts</div>
-    </div>
-    ${players.length
+  container.innerHTML =
+    `<div class="trainer-list-header">
+       <i class="${teamIcon}" style="color:${teamColor}"></i>
+       <div class="trainer-list-title" style="color:${teamColor}">${teamName}</div>
+       <div class="trainer-list-total" style="color:${teamColor}">${fmt(total)} pts</div>
+     </div>` +
+    (players.length
       ? players.map((p, i) => trainerRowHTML(p, i + 1, maxPts)).join('')
-      : '<div class="trainer-row"><span style="color:var(--pk-muted);font-size:.85rem"><i class="fas fa-clock"></i> No data yet — run the update script.</span></div>'}`;
+      : '<div class="trainer-row"><span style="color:var(--pk-muted);font-size:.8rem"><i class="fas fa-clock"></i> No data yet.</span></div>');
 }
 
 /* ─── Combined leaderboard ───────────────────────────────────── */
 function renderCombined() {
   const all    = [...(data.players || [])].sort((a, b) => b.totalPoints - a.totalPoints);
   const maxPts = Math.max(...all.map(p => p.totalPoints), 1);
-
-  if (!all.length) {
-    document.getElementById('combined-board').innerHTML =
-      '<div class="trainer-row"><span style="color:var(--pk-muted)"><i class="fas fa-clock"></i> No data yet.</span></div>';
-    return;
-  }
-
   document.getElementById('combined-board').innerHTML =
-    '<div class="trainer-list-header">' +
-    '<i class="fas fa-ranking-star" style="color:var(--pk-yellow)"></i>' +
-    '<div class="trainer-list-title" style="color:var(--pk-yellow)">All Trainers</div>' +
-    '</div>' +
-    all.map((p, i) => {
+    `<div class="trainer-list-header">
+       <i class="fas fa-ranking-star" style="color:var(--pk-yellow)"></i>
+       <div class="trainer-list-title" style="color:var(--pk-yellow)">All Trainers</div>
+     </div>` +
+    (all.length ? all.map((p, i) => {
       const typeTag = p.team === 'norma'
-        ? '<span class="team-tag fire"><i class="fas fa-fire"></i> Fire</span>'
-        : '<span class="team-tag water"><i class="fas fa-droplet"></i> Water</span>';
+        ? '<span class="team-tag fire"><i class="fas fa-fire"></i>&nbsp;Fire</span>'
+        : '<span class="team-tag water"><i class="fas fa-droplet"></i>&nbsp;Water</span>';
       const color   = p.color;
       const pct     = (p.totalPoints / maxPts * 100).toFixed(1);
-      const rankLabel = i < 3 ? MEDALS[i] : `<span style="color:var(--pk-muted)">${i + 1}</span>`;
+      const rank    = i < 3 ? MEDALS[i] : `<span style="color:var(--pk-muted)">${i + 1}</span>`;
       return `
         <div class="trainer-row">
-          <div class="rank-num">${rankLabel}</div>
-          <div class="trainer-avatar" style="background:${color}18; color:${color}; border-color:${color}44">${p.initials}</div>
+          <div class="rank-num">${rank}</div>
+          <div class="trainer-avatar" style="background:${color}18;color:${color};border-color:${color}55">${p.initials}</div>
           <div>
-            <div class="trainer-row-name">${p.name} ${typeTag}</div>
+            <div class="trainer-row-name">${p.name}${typeTag}</div>
             <div class="mini-catches">
-              ${p.csatWithComment > 0
-                ? `<span class="mini-catch shiny"><i class="fas fa-star"></i> ${p.csatWithComment} shiny</span>`
-                : ''}
-              ${p.csatNoComment > 0
-                ? `<span class="mini-catch regular"><i class="fas fa-circle-check"></i> ${p.csatNoComment} regular</span>`
-                : ''}
-              ${p.csatWithComment === 0 && p.csatNoComment === 0
-                ? `<span style="font-size:.72rem;color:var(--pk-muted)"><i class="fas fa-clock"></i> No catches yet</span>`
-                : ''}
+              ${p.csatWithComment > 0 ? `<span class="mini-catch shiny"><i class="fas fa-star"></i>&nbsp;${p.csatWithComment} shiny</span>` : ''}
+              ${p.csatNoComment   > 0 ? `<span class="mini-catch regular"><i class="fas fa-circle-check"></i>&nbsp;${p.csatNoComment} regular</span>` : ''}
+              ${p.csatWithComment === 0 && p.csatNoComment === 0 ? `<span style="font-size:.7rem;color:var(--pk-muted)"><i class="fas fa-clock"></i> No catches yet</span>` : ''}
             </div>
             <div class="player-hp-wrap">
-              <div class="hp-track" style="height:4px">
+              <div class="hp-track" style="height:5px">
                 <div class="hp-fill ${hpClass(pct)}" style="width:${pct}%"></div>
               </div>
             </div>
@@ -736,31 +911,196 @@ function renderCombined() {
             <div class="score-pts-label">pts</div>
           </div>
         </div>`;
-    }).join('');
+    }).join('')
+    : '<div class="trainer-row"><span style="color:var(--pk-muted)"><i class="fas fa-clock"></i> No data yet.</span></div>');
 }
 
-/* ─── Starfield ──────────────────────────────────────────────── */
+/* ─── May CSAT History ───────────────────────────────────────── */
+function renderHistory() {
+  const container = document.getElementById('csat-history');
+  const history   = data.csatHistory || [];
+  const header = `
+    <div class="history-feed-header">
+      <i class="fas fa-scroll" style="color:var(--pk-yellow)"></i>
+      <div class="history-feed-title" style="color:var(--pk-yellow)">May 2026 · All Catches</div>
+      <div class="history-count">${history.length} total</div>
+    </div>`;
+  if (!history.length) {
+    container.innerHTML = header + '<div class="history-item" style="grid-template-columns:1fr;padding:16px 18px"><span style="color:var(--pk-muted);font-size:.8rem"><i class="fas fa-clock"></i> No May CSATs yet.</span></div>';
+    return;
+  }
+  container.innerHTML = header + history.map(h => {
+    const color   = h.color;
+    const typeTag = h.team === 'norma'
+      ? `<span class="history-type-tag" style="background:rgba(255,107,53,.15);color:var(--fire-color);border:1px solid rgba(255,107,53,.3)"><i class="fas fa-fire"></i>&nbsp;Fire</span>`
+      : `<span class="history-type-tag" style="background:rgba(91,184,245,.12);color:var(--water-color);border:1px solid rgba(91,184,245,.25)"><i class="fas fa-droplet"></i>&nbsp;Water</span>`;
+    const commentBlock = h.hasComment
+      ? `<div class="history-comment" style="outline-color:${color}55;border-color:${color}44">
+           <span style="color:${color}">▲</span>
+           <i class="fas fa-quote-left" style="font-size:.58rem;color:${color};margin-right:5px;opacity:.7"></i>${h.comment}
+         </div>`
+      : `<div class="history-no-comment">
+           <i class="fas fa-circle-check" style="color:var(--pk-hp-green)"></i>
+           No comment — regular catch
+         </div>`;
+    const ptsColor = h.hasComment ? 'var(--pk-shiny)' : 'var(--pk-hp-green)';
+    const ptsIcon  = h.hasComment
+      ? '<i class="fas fa-star" style="color:var(--pk-shiny)"></i>'
+      : '<i class="fas fa-circle-check" style="color:var(--pk-hp-green)"></i>';
+    return `
+      <div class="history-item">
+        <div class="history-avatar" style="background:${color}18;color:${color};border-color:${color}55">${h.initials}</div>
+        <div>
+          <div class="history-meta">
+            <span class="history-name">${h.name}</span>
+            ${typeTag}
+            <span class="history-date"><i class="fas fa-calendar-day"></i> ${h.niceDate}</span>
+          </div>
+          ${commentBlock}
+        </div>
+        <div>
+          <div class="history-pts" style="color:${ptsColor}">${ptsIcon} +${h.points}</div>
+          <div class="history-pts-label">pts</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+/* ─── Grass blades ───────────────────────────────────────────── */
+(function() {
+  const layer = document.getElementById('grass-layer');
+  const count = Math.ceil(window.innerWidth / 7) + 4;
+  for (let i = 0; i < count; i++) {
+    const b = document.createElement('div');
+    b.className = 'grass-blade';
+    const h = 16 + Math.random() * 22;
+    b.style.cssText = `
+      height:${h}px;
+      background:${Math.random() > .5 ? '#0A3A0A' : '#082808'};
+      animation-duration:${1.6 + Math.random() * 1.2}s;
+      animation-delay:${-Math.random() * 2}s;
+      transform:rotate(${(Math.random() - .5) * 10}deg);
+    `;
+    layer.appendChild(b);
+  }
+})();
+
+/* ─── Canvas: sparkle stars + floating Pokeballs ─────────────── */
 (function() {
   const cv = document.getElementById('starfield');
   const cx = cv.getContext('2d');
-  let stars = [];
+  let stars = [], balls = [];
+
   function resize() { cv.width = innerWidth; cv.height = innerHeight; }
+
   function init() {
-    stars = Array.from({length: 160}, () => ({
-      x: Math.random() * cv.width, y: Math.random() * cv.height,
-      r: Math.random() * 1.1 + .2, phase: Math.random() * Math.PI * 2,
-      speed: Math.random() * .007 + .003,
+    // Cross-shaped sparkle stars
+    stars = Array.from({length: 200}, () => ({
+      x: Math.random() * cv.width,
+      y: Math.random() * cv.height * .75,
+      r: Math.random() * 1.4 + .3,
+      phase: Math.random() * Math.PI * 2,
+      speed: Math.random() * .006 + .002,
+      color: Math.random() > .85 ? '#FFCB05' : Math.random() > .7 ? '#A0C0FF' : '#FFFFFF',
+    }));
+    // Floating Pokeballs (small, semi-transparent, slow drift)
+    balls = Array.from({length: 8}, () => ({
+      x: Math.random() * cv.width,
+      y: Math.random() * cv.height * .7,
+      r: 8 + Math.random() * 12,
+      vx: (Math.random() - .5) * .25,
+      vy: (Math.random() - .5) * .15,
+      opacity: .04 + Math.random() * .06,
+      phase: Math.random() * Math.PI * 2,
     }));
   }
+
+  function drawSparkle(x, y, r, a, color) {
+    cx.save();
+    cx.globalAlpha = a;
+    cx.strokeStyle = color;
+    cx.lineWidth = r * .6;
+    cx.lineCap = 'round';
+    // Horizontal arm
+    cx.beginPath(); cx.moveTo(x - r, y); cx.lineTo(x + r, y); cx.stroke();
+    // Vertical arm
+    cx.beginPath(); cx.moveTo(x, y - r); cx.lineTo(x, y + r); cx.stroke();
+    // Diagonal arms (smaller)
+    const d = r * .5;
+    cx.lineWidth = r * .3;
+    cx.beginPath(); cx.moveTo(x - d, y - d); cx.lineTo(x + d, y + d); cx.stroke();
+    cx.beginPath(); cx.moveTo(x + d, y - d); cx.lineTo(x - d, y + d); cx.stroke();
+    cx.restore();
+  }
+
+  function drawPokeball(x, y, r, opacity) {
+    cx.save();
+    cx.globalAlpha = opacity;
+    // Top half (red)
+    cx.beginPath();
+    cx.arc(x, y, r, Math.PI, 0);
+    cx.fillStyle = '#CC2200';
+    cx.fill();
+    // Bottom half (white)
+    cx.beginPath();
+    cx.arc(x, y, r, 0, Math.PI);
+    cx.fillStyle = '#CCCCCC';
+    cx.fill();
+    // Border
+    cx.beginPath();
+    cx.arc(x, y, r, 0, Math.PI * 2);
+    cx.strokeStyle = '#222';
+    cx.lineWidth = r * .12;
+    cx.stroke();
+    // Belt line
+    cx.beginPath();
+    cx.moveTo(x - r, y); cx.lineTo(x + r, y);
+    cx.strokeStyle = '#222';
+    cx.lineWidth = r * .15;
+    cx.stroke();
+    // Center button
+    cx.beginPath();
+    cx.arc(x, y, r * .22, 0, Math.PI * 2);
+    cx.fillStyle = '#CCCCCC';
+    cx.fill();
+    cx.strokeStyle = '#222';
+    cx.lineWidth = r * .1;
+    cx.stroke();
+    cx.restore();
+  }
+
   function draw(t) {
     cx.clearRect(0, 0, cv.width, cv.height);
+
+    // Sparkle stars
     stars.forEach(s => {
-      const a = .12 + .88 * Math.abs(Math.sin(s.phase + t * s.speed));
-      cx.beginPath(); cx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-      cx.fillStyle = `rgba(255,255,255,${a})`; cx.fill();
+      const a = .1 + .9 * Math.abs(Math.sin(s.phase + t * s.speed));
+      if (a > .5) {
+        drawSparkle(s.x, s.y, s.r * .8, a, s.color);
+      } else {
+        cx.globalAlpha = a;
+        cx.fillStyle = s.color;
+        cx.beginPath();
+        cx.arc(s.x, s.y, s.r * .4, 0, Math.PI * 2);
+        cx.fill();
+        cx.globalAlpha = 1;
+      }
     });
+
+    // Floating Pokeballs
+    balls.forEach(b => {
+      b.x += b.vx; b.y += b.vy;
+      if (b.x < -b.r * 2) b.x = cv.width + b.r;
+      if (b.x > cv.width + b.r * 2) b.x = -b.r;
+      if (b.y < -b.r * 2) b.y = cv.height * .75;
+      if (b.y > cv.height * .75) b.y = -b.r;
+      const pulse = b.opacity * (.7 + .3 * Math.sin(b.phase + t * .003));
+      drawPokeball(b.x, b.y, b.r, pulse);
+    });
+
     requestAnimationFrame(draw);
   }
+
   resize(); init();
   addEventListener('resize', () => { resize(); init(); });
   requestAnimationFrame(draw);
@@ -771,6 +1111,7 @@ renderBattle();
 renderTeamSection('norma-players', 'norma', 'var(--fire-color)', 'fas fa-fire', 'Fire Gym — Team Norma');
 renderTeamSection('pablo-players', 'pablo', 'var(--water-color)', 'fas fa-droplet', 'Water Gym — Team Pablo');
 renderCombined();
+renderHistory();
 </script>
 </body>
 </html>
