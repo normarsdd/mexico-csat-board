@@ -15,8 +15,8 @@
       --pk-blue:       #3B4CCA;
       --pk-bg:         #060614;
       --pk-surface:    #0E0E28;
-      --pk-card:       #13132B;
-      --pk-card-inner: #0A0A20;
+      --pk-card:       rgba(19,19,43,0.5);
+      --pk-card-inner: rgba(10,10,32,0.5);
       --pk-border-out: #08082A;
       --pk-border-in:  #2A2A6A;
       --pk-text:       #E8E8FF;
@@ -284,16 +284,16 @@
     .battle-arena-bg {
       position: absolute; inset: 0;
       background: linear-gradient(90deg,
-        #1A0C00 0%, #2A1400 35%,
-        #0A0A1A 45%, #0A0A1A 55%,
-        #001428 65%, #001A30 100%);
+        rgba(26,12,0,.5) 0%, rgba(42,20,0,.5) 35%,
+        rgba(10,10,26,.5) 45%, rgba(10,10,26,.5) 55%,
+        rgba(0,20,40,.5) 65%, rgba(0,26,48,.5) 100%);
       z-index: 0;
     }
     /* Ground line */
     .battle-arena-bg::after {
       content: '';
       position: absolute; bottom: 0; left: 0; right: 0; height: 48px;
-      background: linear-gradient(90deg, #120800 0%, #0C0C20 50%, #001018 100%);
+      background: linear-gradient(90deg, rgba(18,8,0,.5) 0%, rgba(12,12,32,.5) 50%, rgba(0,16,24,.5) 100%);
       border-top: 2px solid rgba(255,255,255,.05);
     }
     .battle-grid {
@@ -314,12 +314,12 @@
     }
     .trainer-card:hover { transform: translateY(-4px); }
     .trainer-card.fire {
-      background: linear-gradient(160deg, #1E0C00, #2A1200);
+      background: linear-gradient(160deg, rgba(30,12,0,.5), rgba(42,18,0,.5));
       border-color: var(--fire-color);
       box-shadow: 0 0 30px rgba(255,107,53,.25), inset 0 1px 0 rgba(255,150,80,.15);
     }
     .trainer-card.water {
-      background: linear-gradient(160deg, #001428, #001E38);
+      background: linear-gradient(160deg, rgba(0,20,40,.5), rgba(0,30,56,.5));
       border-color: var(--water-color);
       box-shadow: 0 0 30px rgba(91,184,245,.2), inset 0 1px 0 rgba(91,184,245,.15);
     }
@@ -380,8 +380,8 @@
     }
     .hp-track {
       flex: 1; height: 8px;
-      background: #0A0A1A;
-      border: 2px solid #1A1A3A;
+      background: rgba(10,10,26,.5);
+      border: 2px solid rgba(26,26,58,.6);
       border-radius: 1px; overflow: hidden;
     }
     .hp-fill {
@@ -1046,29 +1046,6 @@ function renderHistory() {
   const cv = document.getElementById('starfield');
   const cx = cv.getContext('2d');
 
-  // ── Sunlight sparkles ──────────────────────────────────────
-  let sparkles = [];
-  function initSparkles() {
-    sparkles = Array.from({length: 60}, () => ({
-      x: Math.random() * cv.width,
-      y: Math.random() * cv.height * .72,
-      r: Math.random() * 2 + .8,
-      phase: Math.random() * Math.PI * 2,
-      speed: Math.random() * .003 + .001,
-      color: Math.random() > .5 ? '#FFF9C4' : '#FFFFFF',
-    }));
-  }
-
-  function drawSparkle(x, y, r, a, color) {
-    cx.save(); cx.globalAlpha = a; cx.strokeStyle = color;
-    cx.lineWidth = r * .55; cx.lineCap = 'round';
-    cx.beginPath(); cx.moveTo(x - r, y); cx.lineTo(x + r, y); cx.stroke();
-    cx.beginPath(); cx.moveTo(x, y - r); cx.lineTo(x, y + r); cx.stroke();
-    const d = r * .45; cx.lineWidth = r * .28;
-    cx.beginPath(); cx.moveTo(x - d, y - d); cx.lineTo(x + d, y + d); cx.stroke();
-    cx.beginPath(); cx.moveTo(x + d, y - d); cx.lineTo(x - d, y + d); cx.stroke();
-    cx.restore();
-  }
 
   // ── Pikachu ───────────────────────────────────────────────
   // Walks left→right near the ground, bouncing gently
@@ -1232,7 +1209,7 @@ function renderHistory() {
   function drawPidgey(x, y, sc, t, wingPhase) {
     const s = sc;
     const wing = Math.sin(t * .06 + wingPhase) * 6 * s;
-    cx.save(); cx.translate(x, y);
+    cx.save(); cx.translate(x, y); cx.scale(-1, 1);
 
     // Body
     cx.fillStyle = '#A1887F';
@@ -1275,7 +1252,6 @@ function renderHistory() {
   function resize() { cv.width = innerWidth; cv.height = innerHeight; }
 
   function init() {
-    initSparkles();
     resetPika();
     resetJiggly();
     initPidgeys();
@@ -1283,17 +1259,6 @@ function renderHistory() {
 
   function draw(t) {
     cx.clearRect(0, 0, cv.width, cv.height);
-
-    // ── Sunlight sparkles ──
-    sparkles.forEach(s => {
-      const a = .08 + .45 * Math.abs(Math.sin(s.phase + t * s.speed));
-      if (a > .28) drawSparkle(s.x, s.y, s.r, a, s.color);
-      else {
-        cx.globalAlpha = a; cx.fillStyle = s.color;
-        cx.beginPath(); cx.arc(s.x, s.y, s.r * .35, 0, Math.PI*2); cx.fill();
-        cx.globalAlpha = 1;
-      }
-    });
 
     // ── Pikachu walk ──
     pika.x += pika.speed;
