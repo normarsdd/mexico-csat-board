@@ -1,7 +1,7 @@
 # Mexico CSAT League 🇲🇽
 
 A live CSAT leaderboard for the Mexico TSE team — **Team Norma** vs **Team Pablo**.  
-Hosted on GitHub Pages at [normarsdd.github.io/mexico-csat-board](https://normarsdd.github.io/mexico-csat-board).
+Hosted on GitHub Pages at [ddoghq-sandbox.github.io/mexico-csat-board](https://ddoghq-sandbox.github.io/mexico-csat-board).
 
 ---
 
@@ -73,7 +73,7 @@ gh auth switch -u normarsdd
 
 | Remote | Repo | URL |
 |--------|------|-----|
-| `origin` | normarsdd/mexico-csat-board | https://normarsdd.github.io/mexico-csat-board |
+| `origin` | normarsdd/mexico-csat-board | (mirror, not the primary) |
 | `ddog` | ddoghq-sandbox/mexico-csat-board | https://ddoghq-sandbox.github.io/mexico-csat-board |
 
 ---
